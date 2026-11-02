@@ -56,6 +56,7 @@ function RootNavigator() {
         }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="category/[id]" />
+        <Stack.Screen name="product/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen
           name="search"
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}

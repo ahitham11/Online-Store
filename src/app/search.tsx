@@ -171,7 +171,7 @@ export default function SearchScreen() {
                   key={product.id}
                   product={product}
                   width={cardWidth}
-                  onPress={() => router.push(`/category/${product.categoryId}`)}
+                  onPress={() => router.push(`/product/${product.id}`)}
                 />
               ))}
             </View>

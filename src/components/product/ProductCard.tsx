@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Monogram } from '@/components/brand/BrandMark';
@@ -9,6 +10,7 @@ import { useI18n } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
 import { hapticSuccess, hapticTap } from '@/lib/haptics';
 import { formatEgp, stockState } from '@/lib/format';
+import { bagLineFor, defaultVariant, galleryFor } from '@/lib/variants';
 import type { Product } from '@/data/catalog';
 import { useBagStore } from '@/stores/bag';
 import { useWishlistStore } from '@/stores/wishlist';
@@ -34,12 +36,12 @@ export function ProductCard({ product, onPress, width }: Props) {
   const inWishlist = useWishlistStore((state) => state.productIds.includes(product.id));
   const toggleWishlist = useWishlistStore((state) => state.toggle);
 
-  const variant = product.variants.find((item) => item.available > 0) ?? product.variants[0];
+  const variant = defaultVariant(product);
   const soldOut = !variant || variant.available <= 0;
   const stock = variant ? stockState(variant.available, variant.lowStockThreshold) : 'out_of_stock';
   const name = localized(product.nameAr, product.nameEn);
   const shade = variant ? localized(variant.shadeNameAr, variant.shadeNameEn) : '';
-  const image = product.images[0] ?? variant?.images[0] ?? null;
+  const image = galleryFor(product, variant)[0] ?? null;
   const price = variant?.priceEgp ?? 0;
 
   return (
@@ -59,7 +61,8 @@ export function ProductCard({ product, onPress, width }: Props) {
           accessibilityLabel={name}
           onPress={() => {
             hapticTap();
-            onPress?.(product);
+            if (onPress) onPress(product);
+            else router.push(`/product/${product.id}`);
           }}
           style={styles.imageArea}>
           {image ? (
@@ -156,21 +159,7 @@ export function ProductCard({ product, onPress, width }: Props) {
               onPress={() => {
                 if (!variant || soldOut) return;
                 hapticSuccess();
-                addLine({
-                  key: variant.sku,
-                  productId: product.id,
-                  sku: variant.sku,
-                  nameAr: product.nameAr,
-                  nameEn: product.nameEn,
-                  shadeNameAr: variant.shadeNameAr,
-                  shadeNameEn: variant.shadeNameEn,
-                  shadeHex: variant.shadeHex,
-                  size: variant.size,
-                  soldAs: product.soldAs,
-                  unitPriceEgp: variant.priceEgp,
-                  quantity: 1,
-                  imageUri: image,
-                });
+                addLine(bagLineFor(product, variant));
               }}
               style={({ pressed }) => [
                 styles.addButton,
