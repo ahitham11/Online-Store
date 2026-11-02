@@ -41,6 +41,13 @@
           "imageWidth": 220,
           "resizeMode": "contain"
         }
+      ],
+      [
+        "expo-localization",
+        {
+          "supportsRTL": false,
+          "forcesRTL": false
+        }
       ]
     ],
     "experiments": {

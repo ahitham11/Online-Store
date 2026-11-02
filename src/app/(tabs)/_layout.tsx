@@ -8,6 +8,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { AppHeader } from '@/components/chrome/AppHeader';
 import { Drawer } from '@/components/chrome/Drawer';
 import { FloatingTabBar } from '@/components/chrome/FloatingTabBar';
 import { HeaderScrollContext } from '@/components/chrome/HeaderScrollContext';
@@ -76,6 +77,7 @@ export default function TabsLayout() {
             <Tabs.Screen name="bag" />
             <Tabs.Screen name="account" />
           </Tabs>
+          <AppHeader />
           <OfflineBanner />
         </Animated.View>
       </HeaderScrollContext.Provider>

@@ -128,19 +128,20 @@ export function HeroSlider({ width, height, slides, index, onChange, onCta }: Pr
           <View style={styles.arrows}>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={t('home.heroPrev')}
+              accessibilityLabel={isRTL ? t('home.heroNext') : t('home.heroPrev')}
               onPress={() => go(isRTL ? 1 : -1)}
               hitSlop={8}
               style={({ pressed }) => [styles.arrow, { opacity: pressed ? 0.55 : 1 }]}>
-              <Icon name="chevron" size={14} color={palette.champagneLight} mirrored />
+              {/* Physical left arrow in both languages. */}
+              <Icon name="chevron" size={14} color={palette.champagneLight} flip={!isRTL} />
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={t('home.heroNext')}
+              accessibilityLabel={isRTL ? t('home.heroPrev') : t('home.heroNext')}
               onPress={() => go(isRTL ? -1 : 1)}
               hitSlop={8}
               style={({ pressed }) => [styles.arrow, { opacity: pressed ? 0.55 : 1 }]}>
-              <Icon name="chevron" size={14} color={palette.champagneLight} />
+              <Icon name="chevron" size={14} color={palette.champagneLight} flip={isRTL} />
             </Pressable>
           </View>
         ) : (

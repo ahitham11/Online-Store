@@ -43,7 +43,7 @@ export function StackHeader({ title, eyebrow, right, onBack }: Props) {
         }}
         hitSlop={10}
         style={({ pressed }) => [styles.back, { opacity: pressed ? 0.55 : 1 }]}>
-        <Icon name="chevron" size={18} color={colors.text} mirrored />
+        <Icon name="chevron" size={18} color={colors.text} flip />
       </Pressable>
       <View style={styles.copy}>
         {eyebrow ? (

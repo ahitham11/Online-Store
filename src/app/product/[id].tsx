@@ -64,7 +64,7 @@ export default function ProductScreen() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-  const { t, localized, language } = useI18n();
+  const { t, localized, isRTL, language } = useI18n();
   const catalog = useCatalog();
 
   const product = useMemo(
@@ -206,7 +206,7 @@ export default function ProductScreen() {
             {t(soldAsKeys[product.soldAs])}
           </AppText>
 
-          <View style={styles.priceRow}>
+          <View style={[styles.priceRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             {variant ? (
               <AppText variant="price" style={styles.price} maxScale={1.2}>
                 {formatEgp(variant.priceEgp, language)}
@@ -226,7 +226,7 @@ export default function ProductScreen() {
             ) : null}
           </View>
 
-          <View style={styles.stockRow}>
+          <View style={[styles.stockRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View
               style={[
                 styles.stockDot,
@@ -250,7 +250,7 @@ export default function ProductScreen() {
                 ? ` — ${localized(variant.shadeNameAr, variant.shadeNameEn)}`
                 : ''}
             </AppText>
-            <View style={styles.wrapRow}>
+            <View style={[styles.wrapRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               {shadeVariants.map((item) => {
                 const selected = item.sku === variant?.sku;
                 const label = localized(item.shadeNameAr, item.shadeNameEn) || item.sku;
@@ -292,7 +292,7 @@ export default function ProductScreen() {
             <AppText variant="label" tone="accent" style={styles.eyebrow} maxScale={1.2}>
               {t('product.size')}
             </AppText>
-            <View style={styles.wrapRow}>
+            <View style={[styles.wrapRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               {sizes.map((item) => (
                 <Button
                   key={item.sku}
@@ -310,8 +310,8 @@ export default function ProductScreen() {
 
         <GoldRule width="100%" />
 
-        <View style={styles.buyRow}>
-          <View style={[styles.stepper, { borderColor: colors.goldLine }]}>
+        <View style={[styles.buyRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={[styles.stepper, { borderColor: colors.goldLine, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={t('bag.decrease')}

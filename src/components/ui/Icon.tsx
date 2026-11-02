@@ -61,6 +61,8 @@ type IconProps = {
   strokeWidth?: number;
   filled?: boolean;
   mirrored?: boolean;
+  /** Reverse the final direction, e.g. a chevron that points back instead of forward. */
+  flip?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -71,11 +73,12 @@ export function Icon({
   strokeWidth = 1.6,
   filled = false,
   mirrored = false,
+  flip = false,
   style,
 }: IconProps) {
   const { isRTL } = useI18n();
   const directionMirror = mirrored && isRTL;
-  const shouldMirror = directionMirror || (name === 'chevron' && isRTL);
+  const shouldMirror = (directionMirror || (name === 'chevron' && isRTL)) !== flip;
 
   const content = useMemo(() => {
     const stroke = {
