@@ -7,6 +7,7 @@ import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { useAccountSync } from '@/hooks/useAccountSync';
 import { useAppFonts } from '@/lib/fonts';
 import { I18nProvider } from '@/lib/i18n';
 import { queryClient } from '@/lib/query';
@@ -44,6 +45,7 @@ export default function RootLayout() {
 
 function RootNavigator() {
   const { isDark, colors } = useTheme();
+  useAccountSync();
   return (
     <>
       <StatusBar style={isDark ? 'light' : 'dark'} />
@@ -62,6 +64,10 @@ function RootNavigator() {
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
         />
         <Stack.Screen name="policies/[slug]" />
+        <Stack.Screen
+          name="sign-in"
+          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
         <Stack.Screen name="lab" />
         <Stack.Screen name="+not-found" options={{ animation: 'fade' }} />
       </Stack>

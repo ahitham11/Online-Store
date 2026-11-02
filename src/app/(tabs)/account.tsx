@@ -14,6 +14,7 @@ import { policySlugs, type PolicySlug } from '@/data/policies';
 import { hapticSelection, hapticTap } from '@/lib/haptics';
 import { useI18n, type TranslationKey } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
+import { authIsAvailable, useSessionStore } from '@/stores/session';
 import type { ThemePreference } from '@/theme/tokens';
 import { hairline, radii, spacing } from '@/theme/tokens';
 
@@ -36,6 +37,10 @@ export default function AccountScreen() {
   const { t, language, setLanguage, isRTL } = useI18n();
   const version = Constants.expoConfig?.version ?? '1.0.0';
   const whatsapp = getWhatsAppUrl();
+  const status = useSessionStore((state) => state.status);
+  const user = useSessionStore((state) => state.user);
+  const signOut = useSessionStore((state) => state.signOut);
+  const signedIn = status === 'signedIn';
 
   const themeOptions: { key: ThemePreference; label: TranslationKey; icon: IconName }[] = [
     { key: 'system', label: 'account.themeSystem', icon: 'settings' },
@@ -55,24 +60,47 @@ export default function AccountScreen() {
             <Monogram size={56} color={colors.text} gold={colors.accent} />
             <View style={styles.guestCopy}>
               <AppText variant="titleSmall" maxScale={1.2}>
-                {t('account.guestTitle')}
+                {signedIn ? t('account.signedInTitle') : t('account.guestTitle')}
               </AppText>
-              <AppText variant="bodySmall" tone="secondary" maxScale={1.3}>
-                {t('account.guestBody')}
+              <AppText variant="bodySmall" tone="secondary" maxScale={1.3} numberOfLines={2}>
+                {signedIn ? (user?.email ?? '') : t('account.guestBody')}
               </AppText>
             </View>
           </View>
-          <Button
-            label={t('account.signIn')}
-            icon="phone"
-            variant="outline"
-            size="sm"
-            disabled
-            accessibilityHint={t('account.signInSoon')}
-          />
-          <AppText variant="caption" tone="tertiary" align="center" maxScale={1.2}>
-            {t('account.signInSoon')}
-          </AppText>
+          {signedIn ? (
+            <>
+              <AppText variant="caption" tone="tertiary" align="center" maxScale={1.2}>
+                {t('account.syncNote')}
+              </AppText>
+              <Button
+                label={t('account.signOut')}
+                variant="outline"
+                size="sm"
+                onPress={() => {
+                  hapticTap();
+                  signOut().catch(() => undefined);
+                }}
+              />
+            </>
+          ) : (
+            <>
+              <Button
+                label={t('account.signIn')}
+                icon="user"
+                variant="outline"
+                size="sm"
+                loading={status === 'restoring'}
+                disabled={!authIsAvailable}
+                accessibilityHint={authIsAvailable ? undefined : t('account.signInSoon')}
+                onPress={() => router.push('/sign-in')}
+              />
+              {!authIsAvailable ? (
+                <AppText variant="caption" tone="tertiary" align="center" maxScale={1.2}>
+                  {t('account.signInSoon')}
+                </AppText>
+              ) : null}
+            </>
+          )}
         </View>
 
         <View style={styles.group}>

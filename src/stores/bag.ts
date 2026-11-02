@@ -25,6 +25,7 @@ type BagState = {
   removeLine: (key: string) => void;
   setQuantity: (key: string, quantity: number) => void;
   clear: () => void;
+  replaceLines: (lines: BagLine[]) => void;
 };
 
 export const useBagStore = create<BagState>()(
@@ -52,6 +53,7 @@ export const useBagStore = create<BagState>()(
               : state.lines.map((line) => (line.key === key ? { ...line, quantity } : line)),
         })),
       clear: () => set({ lines: [] }),
+      replaceLines: (lines) => set({ lines }),
     }),
     {
       name: 'velvety.bag.v1',

@@ -173,6 +173,12 @@ never be prefixed with `EXPO_PUBLIC_`.
 4. Restart Metro. Home, categories, search and the new product page fill from
    Supabase.
 
+5. **Email sign-in:** in Supabase → Authentication → Email Templates → *Magic
+   Link*, put the code in the email body, e.g. `Your Velvety code: {{ .Token }}`.
+   The app asks for that code (no links, no passwords). For real volume, set a
+   custom SMTP sender under Authentication → SMTP, because Supabase's built-in
+   sender is rate-limited.
+
 The service-role key is used only by the importer on your machine. It is never
 prefixed with `EXPO_PUBLIC_` and never reaches the app bundle.
 
@@ -191,8 +197,32 @@ prefixed with `EXPO_PUBLIC_` and never reaches the app bundle.
 - **Product page** (`src/app/product/[id].tsx`): gallery, shade swatches, size
   choice, stock state, savings, a quantity stepper clamped to stock,
   add-to-bag and wishlist. Product cards and search results open it.
-- **Tests**: 11 new unit tests (27 total), plus a browser check of the full
-  product → bag flow against a mocked Supabase.
+- **Email-code sign-in** (`src/app/sign-in.tsx`, `src/lib/auth.ts`,
+  `src/stores/session.ts`): the shopper enters her email and then a 6-digit
+  code; Arabic-Indic digits are accepted. Only the refresh token is stored, in
+  the device keychain via `expo-secure-store`; the access token stays in memory
+  and refreshes automatically.
+- **Bag and wishlist sync** (`src/lib/accountSync.ts`,
+  `src/hooks/useAccountSync.ts`): on sign-in the device and server copies are
+  merged (the larger quantity wins, never doubled), then later changes are
+  pushed. Prices always come from the catalog, never from the server copy.
+- **Tests**: 22 new unit tests (38 total), plus browser checks of the product →
+  bag flow and the full sign-in → merge → reload → sign-out flow against a
+  mocked Supabase.
+
+### Layout fixes to Phase 1
+
+- **RTL double mirroring:** rows are mirrored by hand, but on the web
+  `<html dir="rtl">` mirrored them again, and Android does the same on phones
+  set to Arabic. The layout engine now stays LTR everywhere: web `dir` is
+  `ltr`, and `app.json` sets expo-localization `supportsRTL: false`. Arabic
+  screens now read right-to-left correctly.
+- **Floating header:** `AppHeader` (menu, search, bag) was never mounted, so
+  the drawer could not be opened. The tab layout now renders it.
+- **Drawer:** the closed drawer was half visible in Arabic. It is now anchored
+  to the correct edge.
+- **Arrows:** the back chevron and the hero previous/next arrows now point the
+  right way in both languages.
 
 ---
 
@@ -202,6 +232,6 @@ prefixed with `EXPO_PUBLIC_` and never reaches the app bundle.
 | --- | --- | --- |
 | 1 | Tokens, RTL, navigation, chrome, hero, opening, measured 3D comparison | Complete |
 | 2 | Supabase schema/RLS, catalog ingestion, product detail | **Complete. Needs your Supabase project and catalog** |
-| 2b | Supabase Auth (phone OTP) and wishlist/bag server sync | Next. The tables and RLS are already in place |
-| 3 | Checkout, Paymob, shipping, orders, notifications | Planned. Needs Paymob and courier accounts |
+| 2b | Supabase Auth (email code) and wishlist/bag server sync | **Complete. Needs the email template change above** |
+| 3 | Checkout, Paymob, shipping, orders, notifications | Next. Needs Paymob and courier accounts |
 | 4 | Admin, inventory, release hardening, store submission | Planned |

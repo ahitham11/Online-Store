@@ -27,6 +27,7 @@ import { brand, getWhatsAppUrl } from '@/data/brand';
 import { hapticSelection, hapticTap } from '@/lib/haptics';
 import { useI18n } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
+import { authIsAvailable, useSessionStore } from '@/stores/session';
 import { useUiStore } from '@/stores/ui';
 import {
   hairline,
@@ -54,6 +55,8 @@ export function Drawer() {
   const { isRTL, t, language, setLanguage } = useI18n();
   const open = useUiStore((state) => state.drawerOpen);
   const close = useUiStore((state) => state.closeDrawer);
+  const signedIn = useSessionStore((state) => state.status === 'signedIn');
+  const user = useSessionStore((state) => state.user);
   const progress = useSharedValue(0);
   const panelWidth = Math.min(layout.drawerMaxWidth, width * 0.86);
 
@@ -157,7 +160,10 @@ export function Drawer() {
             width: panelWidth,
             backgroundColor: isDark ? '#1B0C18' : palette.pearl,
             borderColor: colors.goldLine,
-            start: 0,
+            // Physical edge: the layout engine stays LTR (see lib/i18n.tsx).
+            ...(isRTL
+              ? { right: 0, borderLeftWidth: hairline }
+              : { left: 0, borderRightWidth: hairline }),
             shadowColor: colors.shadow,
           },
           panelStyle,
@@ -201,19 +207,21 @@ export function Drawer() {
                 <AppText variant="body" font="bodySemiBold" maxScale={1.3}>
                   {t('drawer.greeting')}
                 </AppText>
-                <AppText variant="caption" tone="secondary" maxScale={1.3}>
-                  {t('drawer.guest')}
+                <AppText variant="caption" tone="secondary" maxScale={1.3} numberOfLines={1}>
+                  {signedIn ? (user?.email ?? '') : t('drawer.guest')}
                 </AppText>
               </View>
             </View>
-            <Button
-              label={t('drawer.signIn')}
-              variant="outline"
-              size="sm"
-              icon="phone"
-              onPress={() => navigate('/account')}
-              accessibilityHint={t('account.signInSoon')}
-            />
+            {signedIn ? null : (
+              <Button
+                label={t('drawer.signIn')}
+                variant="outline"
+                size="sm"
+                icon="user"
+                onPress={() => navigate(authIsAvailable ? '/sign-in' : '/account')}
+                accessibilityHint={authIsAvailable ? undefined : t('account.signInSoon')}
+              />
+            )}
           </View>
 
           <View style={styles.navGroup}>
@@ -362,7 +370,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     bottom: 0,
-    borderStartWidth: hairline,
     ...shadows.floating,
   },
   panelGlow: {
