@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   badgeText: {
-    color: '#2B1026',
+    color: '#1C1517',
     fontSize: 8,
     lineHeight: 11,
     fontWeight: '600',

@@ -29,12 +29,12 @@ export function AppHeader() {
   const scrollY = useHeaderScroll();
   const isHome = pathname === '/' || pathname === '/index';
 
-  const tone = isHome ? colors.onVeil : colors.text;
+  const tone = isHome ? colors.stageText : colors.text;
   const circleBackground = isHome
-    ? 'rgba(251, 246, 241, 0.08)'
+    ? isDark ? 'rgba(255, 251, 250, 0.08)' : 'rgba(255, 255, 255, 0.55)'
     : isDark
-      ? 'rgba(251, 246, 241, 0.06)'
-      : 'rgba(255, 252, 249, 0.9)';
+      ? 'rgba(255, 251, 250, 0.06)'
+      : 'rgba(255, 255, 255, 0.9)';
 
   const shellStyle = useAnimatedStyle(() => {
     if (!isHome) {
@@ -53,8 +53,8 @@ export function AppHeader() {
       'clamp',
     );
     return {
-      backgroundColor: `rgba(22, 10, 19, ${progress * 0.94})`,
-      borderBottomColor: `rgba(201, 165, 122, ${progress * 0.42})`,
+      backgroundColor: `rgba(${colors.stageScrim}, ${progress * 0.94})`,
+      borderBottomColor: `rgba(201, 154, 134, ${progress * 0.42})`,
     };
   });
 
@@ -96,7 +96,7 @@ export function AppHeader() {
 
         <View style={styles.brandSlot}>
           <Animated.View style={brandStyle}>
-            <BrandMark variant="wordmark" tone={isHome ? 'light' : isDark ? 'light' : 'dark'} size={0.66} />
+            <BrandMark variant="wordmark" tone={isDark ? 'light' : 'dark'} size={0.66} />
           </Animated.View>
         </View>
 
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   badgeText: {
-    color: '#2B1026',
+    color: '#1C1517',
     fontSize: 9,
     lineHeight: 12,
     fontWeight: '600',

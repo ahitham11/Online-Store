@@ -26,7 +26,7 @@ export function OfflineBanner() {
         styles.wrap,
         {
           top: insets.top + layout.headerHeight + 6,
-          backgroundColor: isDark ? 'rgba(58,23,50,0.94)' : 'rgba(43,16,38,0.94)',
+          backgroundColor: isDark ? 'rgba(42,31,34,0.94)' : 'rgba(28,21,23,0.94)',
           borderColor: colors.goldLine,
           flexDirection: isRTL ? 'row-reverse' : 'row',
         },

@@ -56,7 +56,7 @@ export function Hero3D({
   still = false,
   compact = false,
 }: Props) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { isRTL } = useI18n();
   const reducedMotion = useReducedMotion();
   const device = useDeviceTilt(!still && !reducedMotion);
@@ -147,7 +147,7 @@ export function Hero3D({
             accessibilityIgnoresInvertColors
           />
           <LinearGradient
-            colors={['rgba(22,10,19,0.24)', 'rgba(22,10,19,0.5)', 'rgba(22,10,19,0.94)']}
+            colors={[`rgba(${colors.stageScrim},0.24)`, `rgba(${colors.stageScrim},0.5)`, `rgba(${colors.stageScrim},0.94)`]}
             locations={[0, 0.5, 1]}
             style={StyleSheet.absoluteFill}
           />
@@ -157,10 +157,10 @@ export function Hero3D({
 
       <Animated.View style={[StyleSheet.absoluteFill, sceneStyle]}>
         <View pointerEvents="none" style={styles.frame}>
-          <View style={[styles.corner, styles.cornerTL, { borderColor: 'rgba(201,165,122,0.6)' }]} />
-          <View style={[styles.corner, styles.cornerTR, { borderColor: 'rgba(201,165,122,0.6)' }]} />
-          <View style={[styles.corner, styles.cornerBL, { borderColor: 'rgba(201,165,122,0.6)' }]} />
-          <View style={[styles.corner, styles.cornerBR, { borderColor: 'rgba(201,165,122,0.6)' }]} />
+          <View style={[styles.corner, styles.cornerTL, { borderColor: 'rgba(201,154,134,0.6)' }]} />
+          <View style={[styles.corner, styles.cornerTR, { borderColor: 'rgba(201,154,134,0.6)' }]} />
+          <View style={[styles.corner, styles.cornerBL, { borderColor: 'rgba(201,154,134,0.6)' }]} />
+          <View style={[styles.corner, styles.cornerBR, { borderColor: 'rgba(201,154,134,0.6)' }]} />
         </View>
 
         <Animated.View style={[styles.sculpture, sculptureStyle]}>
@@ -169,9 +169,11 @@ export function Hero3D({
               <LinearGradient
                 key={fold}
                 colors={[
-                  'rgba(22,10,19,0.06)',
-                  fold % 2 === 0 ? 'rgba(168,71,110,0.44)' : 'rgba(58,23,50,0.62)',
-                  'rgba(22,10,19,0.2)',
+                  `rgba(${colors.stageScrim},0.06)`,
+                  fold % 2 === 0
+                    ? isDark ? 'rgba(178,58,82,0.44)' : 'rgba(178,58,82,0.2)'
+                    : isDark ? 'rgba(42,31,34,0.62)' : 'rgba(201,154,134,0.26)',
+                  `rgba(${colors.stageScrim},0.2)`,
                 ]}
                 locations={[0, 0.48, 1]}
                 start={{ x: 0, y: 0 }}
@@ -188,12 +190,12 @@ export function Hero3D({
           </View>
           <View style={styles.arch}>
             <LinearGradient
-              colors={['rgba(251,246,241,0.18)', 'rgba(168,71,110,0.16)', 'rgba(22,10,19,0.5)']}
+              colors={['rgba(255,251,250,0.18)', 'rgba(178,58,82,0.16)', `rgba(${colors.stageScrim},0.5)`]}
               start={{ x: 0.2, y: 0 }}
               end={{ x: 0.8, y: 1 }}
               style={StyleSheet.absoluteFill}
             />
-            <View style={[styles.archInner, { borderColor: 'rgba(233,214,186,0.52)' }]} />
+            <View style={[styles.archInner, { borderColor: 'rgba(235,211,200,0.52)' }]} />
           </View>
         </Animated.View>
 
@@ -214,7 +216,7 @@ export function Hero3D({
           pointerEvents="none"
           style={[styles.sheen, sheenStyle]}>
           <LinearGradient
-            colors={['transparent', 'rgba(251,246,241,0.42)', 'transparent']}
+            colors={['transparent', 'rgba(255,251,250,0.42)', 'transparent']}
             locations={[0, 0.5, 1]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
@@ -222,7 +224,9 @@ export function Hero3D({
           />
         </Animated.View>
 
-        <Animated.View style={[styles.shadow, shadowStyle]} />
+        <Animated.View
+          style={[styles.shadow, !isDark && { backgroundColor: 'rgba(142,38,57,0.12)' }, shadowStyle]}
+        />
 
         <Animated.View
           style={[
@@ -232,7 +236,7 @@ export function Hero3D({
           ]}>
           <View style={[styles.statusRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={styles.statusDot} />
-            <AppText variant="label" tone="onVeilMuted" style={styles.statusText} maxScale={1.2}>
+            <AppText variant="label" tone="stageMuted" style={styles.statusText} maxScale={1.2}>
               {copy.statusLabel}
             </AppText>
             <View style={styles.statusRule} />
@@ -251,7 +255,7 @@ export function Hero3D({
 
           <AppText
             variant={compact ? 'displaySmall' : 'display'}
-            tone="onVeil"
+            tone="stage"
             style={styles.title}
             maxScale={1.15}>
             {copy.title}
@@ -259,7 +263,7 @@ export function Hero3D({
 
           <AppText
             variant="bodySmall"
-            tone="onVeilMuted"
+            tone="stageMuted"
             style={styles.body}
             maxScale={1.25}>
             {copy.body}
@@ -270,7 +274,7 @@ export function Hero3D({
               <Button
                 label={copy.ctaLabel}
                 onPress={onCta}
-                variant="veil"
+                variant={isDark ? 'veil' : 'primary'}
                 size="sm"
                 icon="arrow"
                 iconPosition="end"
@@ -279,7 +283,7 @@ export function Hero3D({
             ) : null}
             <View style={styles.hint}>
               <View style={[styles.hintLine, { backgroundColor: colors.accent }]} />
-              <AppText variant="caption" tone="onVeilMuted" style={styles.hintText} maxScale={1.2}>
+              <AppText variant="caption" tone="stageMuted" style={styles.hintText} maxScale={1.2}>
                 {copy.hint}
               </AppText>
             </View>
@@ -289,7 +293,7 @@ export function Hero3D({
 
       <View pointerEvents="none" style={[styles.bottomFade, { height: height * 0.22 }]}>
         <LinearGradient
-          colors={['transparent', 'rgba(22,10,19,0.86)']}
+          colors={['transparent', `rgba(${colors.stageScrim},0.86)`]}
           style={StyleSheet.absoluteFill}
         />
       </View>
@@ -364,7 +368,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 200,
     overflow: 'hidden',
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(201,165,122,0.62)',
+    borderColor: 'rgba(201,154,134,0.62)',
     marginTop: 24,
   },
   archInner: {
@@ -393,7 +397,7 @@ const styles = StyleSheet.create({
     height: 62,
     borderRadius: 999,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(233,214,186,0.5)',
+    borderColor: 'rgba(235,211,200,0.5)',
     transform: [{ rotate: '-24deg' }],
   },
   pearl: {
@@ -401,7 +405,7 @@ const styles = StyleSheet.create({
     height: 92,
     borderRadius: 999,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(251,246,241,0.5)',
+    borderColor: 'rgba(255,251,250,0.5)',
   },
   pearlHighlight: {
     position: 'absolute',
@@ -439,7 +443,7 @@ const styles = StyleSheet.create({
     width: '46%',
     height: 18,
     borderRadius: 999,
-    backgroundColor: 'rgba(8,3,6,0.6)',
+    backgroundColor: 'rgba(6,4,5,0.6)',
   },
   copy: {
     position: 'absolute',
@@ -465,7 +469,7 @@ const styles = StyleSheet.create({
   statusRule: {
     width: 18,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(201,165,122,0.4)',
+    backgroundColor: 'rgba(201,154,134,0.4)',
   },
   eyebrow: {
     letterSpacing: 2.4,

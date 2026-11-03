@@ -56,7 +56,7 @@ export function Button({
   const variants = {
     primary: {
       background: colors.primary,
-      border: 'rgba(201, 165, 122, 0.55)',
+      border: 'rgba(201, 154, 134, 0.55)',
       text: colors.onPrimary,
       icon: colors.onPrimary,
     },
@@ -79,8 +79,8 @@ export function Button({
       icon: colors.textSecondary,
     },
     veil: {
-      background: 'rgba(251, 246, 241, 0.10)',
-      border: 'rgba(201, 165, 122, 0.62)',
+      background: 'rgba(255, 251, 250, 0.10)',
+      border: 'rgba(201, 154, 134, 0.62)',
       text: colors.onVeil,
       icon: colors.onVeil,
     },

@@ -55,7 +55,7 @@ export function Footer() {
           {t('home.manifestoLine')}
         </AppText>
 
-        <GoldRule width="46%" color="rgba(201, 165, 122, 0.44)" />
+        <GoldRule width="46%" color="rgba(201, 154, 134, 0.44)" />
 
         <AppText variant="bodySmall" tone="onVeilMuted" style={styles.description} maxScale={1.25}>
           {t('footer.description', { handle: brand.handle })}
@@ -124,7 +124,7 @@ export function Footer() {
           </AppText>
         </View>
 
-        <GoldRule width="100%" color="rgba(201, 165, 122, 0.28)" diamond={false} />
+        <GoldRule width="100%" color="rgba(201, 154, 134, 0.28)" diamond={false} />
 
         <AppText variant="caption" tone="onVeilMuted" align="center" style={styles.payment} maxScale={1.2}>
           {t('footer.paymentNote')}

@@ -25,7 +25,7 @@ export default function RootLayout() {
   }, [fontError, fontsLoaded]);
 
   if (!fontsLoaded && !fontError) {
-    return <View style={{ flex: 1, backgroundColor: '#160A13' }} />;
+    return <View style={{ flex: 1, backgroundColor: '#0E0A0B' }} />;
   }
 
   return (

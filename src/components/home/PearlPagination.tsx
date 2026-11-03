@@ -30,10 +30,10 @@ export function PearlPagination({ count, index, onSelect }: Props) {
                 styles.tick,
                 {
                   width: active ? 26 : 6,
-                  backgroundColor: active ? palette.champagneLight : 'rgba(251,246,241,0.34)',
+                  backgroundColor: active ? palette.champagneLight : colors.stageTextMuted,
                 },
               ]}>
-              {active ? <View style={[styles.pearl, { backgroundColor: colors.onVeil }]} /> : null}
+              {active ? <View style={[styles.pearl, { backgroundColor: colors.stageText }]} /> : null}
             </View>
           </Pressable>
         );

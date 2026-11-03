@@ -158,7 +158,7 @@ export function Drawer() {
           styles.panel,
           {
             width: panelWidth,
-            backgroundColor: isDark ? '#1B0C18' : palette.pearl,
+            backgroundColor: isDark ? '#171113' : palette.pearl,
             borderColor: colors.goldLine,
             // Physical edge: the layout engine stays LTR (see lib/i18n.tsx).
             ...(isRTL
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 999,
     borderWidth: hairline,
-    borderColor: 'rgba(201, 165, 122, 0.38)',
+    borderColor: 'rgba(201, 154, 134, 0.38)',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -14,7 +14,7 @@
     "android": {
       "package": "com.velvety.atelier",
       "adaptiveIcon": {
-        "backgroundColor": "#160A13",
+        "backgroundColor": "#0E0A0B",
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "monochromeImage": "./assets/images/adaptive-icon.png"
       },
@@ -25,8 +25,8 @@
       "favicon": "./assets/images/favicon.png",
       "name": "Velvety",
       "shortName": "Velvety",
-      "themeColor": "#160A13",
-      "backgroundColor": "#160A13"
+      "themeColor": "#0E0A0B",
+      "backgroundColor": "#0E0A0B"
     },
     "plugins": [
       [
@@ -39,7 +39,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#160A13",
+          "backgroundColor": "#0E0A0B",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 220,
           "resizeMode": "contain"

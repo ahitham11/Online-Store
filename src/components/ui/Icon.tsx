@@ -69,7 +69,7 @@ type IconProps = {
 export function Icon({
   name,
   size = 22,
-  color = '#2B1026',
+  color = '#1C1517',
   strokeWidth = 1.6,
   filled = false,
   mirrored = false,

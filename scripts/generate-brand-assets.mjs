@@ -97,13 +97,13 @@ function arcAlpha(px, py, cx, cy, radius, width, fromAngle, toAngle) {
   return circleAlpha(px, py, cx, cy, radius, width);
 }
 
-const AUBERGINE_DEEP = hex('#160A13');
-const AUBERGINE = hex('#2B1026');
-const AUBERGINE_SOFT = hex('#3A1732');
-const CHAMPAGNE = hex('#C9A57A');
-const CHAMPAGNE_LIGHT = hex('#E9D6BA');
-const PEARL = hex('#FBF6F1');
-const ROSE = hex('#A8476E');
+const AUBERGINE_DEEP = hex('#0E0A0B');
+const AUBERGINE = hex('#1C1517');
+const AUBERGINE_SOFT = hex('#2A1F22');
+const CHAMPAGNE = hex('#C99A86');
+const CHAMPAGNE_LIGHT = hex('#EBD3C8');
+const PEARL = hex('#FFFBFA');
+const ROSE = hex('#B23A52');
 
 function createBrandPng(size, { background = false, monogramScale = 1 } = {}) {
   const pixels = Buffer.alloc(size * size * 4);

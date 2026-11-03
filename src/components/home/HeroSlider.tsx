@@ -109,7 +109,7 @@ export function HeroSlider({ width, height, slides, index, onChange, onCta }: Pr
             {String(index + 1).padStart(2, '0')}
           </AppText>
           <View style={[styles.countRule, { backgroundColor: colors.goldLine }]} />
-          <AppText variant="caption" tone="onVeilMuted" style={styles.countTotal} maxScale={1.1}>
+          <AppText variant="caption" tone="stageMuted" style={styles.countTotal} maxScale={1.1}>
             {String(slides.length).padStart(2, '0')}
           </AppText>
         </View>
@@ -133,7 +133,7 @@ export function HeroSlider({ width, height, slides, index, onChange, onCta }: Pr
               hitSlop={8}
               style={({ pressed }) => [styles.arrow, { opacity: pressed ? 0.55 : 1 }]}>
               {/* Physical left arrow in both languages. */}
-              <Icon name="chevron" size={14} color={palette.champagneLight} flip={!isRTL} />
+              <Icon name="chevron" size={14} color={colors.stageText} flip={!isRTL} />
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -141,13 +141,13 @@ export function HeroSlider({ width, height, slides, index, onChange, onCta }: Pr
               onPress={() => go(isRTL ? -1 : 1)}
               hitSlop={8}
               style={({ pressed }) => [styles.arrow, { opacity: pressed ? 0.55 : 1 }]}>
-              <Icon name="chevron" size={14} color={palette.champagneLight} flip={isRTL} />
+              <Icon name="chevron" size={14} color={colors.stageText} flip={isRTL} />
             </Pressable>
           </View>
         ) : (
           <View style={styles.scrollHint}>
             <View style={[styles.scrollLine, { backgroundColor: colors.goldLine }]} />
-            <AppText variant="caption" tone="onVeilMuted" style={styles.scrollText} maxScale={1.2}>
+            <AppText variant="caption" tone="stageMuted" style={styles.scrollText} maxScale={1.2}>
               {t('home.heroScroll')}
             </AppText>
           </View>
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 999,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(201,165,122,0.4)',
+    borderColor: 'rgba(201,154,134,0.4)',
     alignItems: 'center',
     justifyContent: 'center',
   },

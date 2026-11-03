@@ -166,7 +166,7 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: colors.bg }]}>
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <Animated.ScrollView
         ref={scrollRef}
         onScroll={scrollHandler}
@@ -380,7 +380,7 @@ export default function HomeScreen() {
               </AppText>
               <GoldRule
                 width="26%"
-                color="rgba(201,165,122,0.5)"
+                color="rgba(201,154,134,0.5)"
                 style={styles.offersRule}
               />
               <AppText
@@ -395,7 +395,7 @@ export default function HomeScreen() {
                 <View
                   style={[
                     styles.countdownCell,
-                    { borderColor: "rgba(201,165,122,0.34)" },
+                    { borderColor: "rgba(201,154,134,0.34)" },
                   ]}
                 >
                   <AppText
@@ -419,7 +419,7 @@ export default function HomeScreen() {
                 <View
                   style={[
                     styles.countdownCell,
-                    { borderColor: "rgba(201,165,122,0.34)" },
+                    { borderColor: "rgba(201,154,134,0.34)" },
                   ]}
                 >
                   <AppText

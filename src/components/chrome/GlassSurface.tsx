@@ -57,7 +57,7 @@ export function GlassSurface({
           StyleSheet.absoluteFill,
           {
             borderRadius: radius,
-            backgroundColor: isDark ? 'rgba(22, 10, 19, 0.12)' : 'rgba(255, 255, 255, 0.18)',
+            backgroundColor: isDark ? 'rgba(14, 10, 11, 0.12)' : 'rgba(255, 255, 255, 0.18)',
           },
         ]}
       />
