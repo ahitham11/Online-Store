@@ -1,0 +1,90 @@
+name: Preview (web link + Android APK)
+
+# Builds a test version of Velvety that the owner can open on a phone.
+#   web:     publishes to Expo Hosting and prints the link
+#   android: starts an installable APK build on Expo (link on expo.dev)
+#
+# Needs one repository secret: EXPO_TOKEN (an Expo personal access token).
+# Settings → Secrets and variables → Actions → New repository secret.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['claude/android-github-setup-dt5dkb', 'main']
+
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Client-safe values: they ship inside every app by design; RLS protects data.
+  EXPO_PUBLIC_SUPABASE_URL: https://dhngznqzwtanhietijkx.supabase.co
+  EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRobmd6bnF6d3RhbmhpZXRpamt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NTMwOTIsImV4cCI6MjEwOTIyOTA5Mn0.E_reYiMKKD1PwH5fd8XK1D9ptwwBm3eSPn_Dh_mI0rw
+  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+  NODE_OPTIONS: --max-old-space-size=4096
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npx expo lint
+      - run: npm test
+
+  web:
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Require EXPO_TOKEN
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::Add the EXPO_TOKEN repository secret first (see the comment at the top of this file)."
+            exit 1
+          fi
+      - run: npm ci
+      - name: Link the Expo project
+        run: npx --yes eas-cli@latest init --non-interactive --force
+      - name: Export web build
+        run: npx expo export --platform web
+      - name: Deploy to Expo Hosting
+        run: npx --yes eas-cli@latest deploy --prod --non-interactive 2>&1 | tee deploy.log
+      - name: Show the link
+        run: |
+          echo "### Velvety test link" >> "$GITHUB_STEP_SUMMARY"
+          grep -Eo 'https://[a-zA-Z0-9.-]+\.expo\.app[^ ]*' deploy.log | sort -u | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY" || true
+
+  android:
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Require EXPO_TOKEN
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::Add the EXPO_TOKEN repository secret first."
+            exit 1
+          fi
+      - run: npm ci
+      - name: Link the Expo project
+        run: npx --yes eas-cli@latest init --non-interactive --force
+      - name: Start the APK build on Expo
+        run: npx --yes eas-cli@latest build --platform android --profile preview --non-interactive --no-wait 2>&1 | tee build.log
+      - name: Show the build page
+        run: |
+          echo "### Android APK build" >> "$GITHUB_STEP_SUMMARY"
+          grep -Eo 'https://expo\.dev/[^ ]+' build.log | sort -u | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY" || true
