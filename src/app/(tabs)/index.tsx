@@ -23,16 +23,16 @@ import { Monogram } from "@/components/brand/BrandMark";
 import { Footer } from "@/components/chrome/Footer";
 import { useHeaderScroll } from "@/components/chrome/HeaderScrollContext";
 import { HeroSlider, type VelvetSlide } from "@/components/home/HeroSlider";
-import { VideoPlayerModal } from "@/components/media/VideoPlayerModal";
-import { VideoTile } from "@/components/media/VideoTile";
+import { AmbientVideo } from "@/components/media/AmbientVideo";
 import { ProductCard } from "@/components/product/ProductCard";
 import { AppText } from "@/components/ui/AppText";
 import { CardGrid, useCardWidth } from "@/components/ui/CardGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Button } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SkeletonBlock } from "@/components/ui/Skeleton";
-import { productVideos, type BrandVideo } from "@/data/media";
+import { ambientClips } from "@/data/media";
 import { useCatalog } from "@/data/useCatalog";
 import { useBottomInset } from "@/hooks/useBottomInset";
 import { useMarket } from "@/hooks/useMarket";
@@ -42,9 +42,7 @@ import { useTheme } from "@/lib/theme";
 import { fromPrice } from "@/lib/variants";
 import { layout, radii, spacing } from "@/theme/tokens";
 
-type Anchor = "categories" | "new" | "videos";
-
-const HOME_VIDEOS = 4;
+type Anchor = "categories" | "new";
 
 const services: { icon: IconName; title: TranslationKey; body: TranslationKey }[] = [
   { icon: "box", title: "home.serviceCodTitle", body: "home.serviceCodBody" },
@@ -63,7 +61,6 @@ export default function HomeScreen() {
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const anchors = useRef<Partial<Record<Anchor, number>>>({});
   const [slideIndex, setSlideIndex] = useState(0);
-  const [openVideo, setOpenVideo] = useState<BrandVideo | null>(null);
 
   const heroHeight = Math.min(Math.max(height * 0.72, 520), 700);
   const gutter = width > 760 ? (width - 720) / 2 : spacing.xl;
@@ -252,25 +249,33 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Videos: the same card frame as products */}
-        <View onLayout={captureAnchor("videos")} style={[styles.section, { paddingHorizontal: gutter }]}>
-          <SectionHeader
-            eyebrow={t("media.eyebrow")}
-            title={t("media.title")}
-            actionLabel={t("media.viewAll")}
-            onAction={() => router.push("/videos")}
-          />
-          <View style={styles.block}>
-            <CardGrid>
-              {productVideos.slice(0, HOME_VIDEOS).map((video) => (
-                <VideoTile key={video.id} video={video} width={cardWidth} onPlay={setOpenVideo} />
-              ))}
-            </CardGrid>
+        {/* Brand band: a faint clip moving behind the words, like the hero */}
+        <View style={[styles.band, { marginTop: spacing["3xl"] }]}>
+          <AmbientVideo clip={ambientClips.redLip} strength={isDark ? 0.2 : 0.3} />
+          <View style={[styles.bandCopy, { paddingHorizontal: gutter }]}>
+            <AppText variant="label" tone="accent" align="center" style={styles.bandEyebrow} maxScale={1.2}>
+              {t("home.bandEyebrow")}
+            </AppText>
+            <AppText variant="displaySmall" align="center" style={styles.bandTitle} maxScale={1.15}>
+              {t("home.bandTitle")}
+            </AppText>
+            <AppText variant="body" tone="secondary" align="center" style={styles.bandBody} maxScale={1.3}>
+              {t("home.bandBody")}
+            </AppText>
+            <Button
+              label={t("home.heroCta")}
+              fullWidth={false}
+              icon="arrow"
+              iconPosition="end"
+              onPress={() => router.push("/categories")}
+            />
           </View>
         </View>
 
-        {/* Service promises: three equal tiles */}
-        <View style={[styles.section, { paddingHorizontal: gutter }]}>
+        {/* Service promises: three equal tiles over a second faint clip */}
+        <View style={[styles.section, styles.serviceSection, { paddingHorizontal: gutter }]}>
+          <AmbientVideo clip={ambientClips.berry} strength={isDark ? 0.1 : 0.14} />
+          <SectionHeader eyebrow={t("home.serviceEyebrow")} title={t("home.serviceTitle")} />
           <View style={[styles.row, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
             {services.map((service) => (
               <View key={service.title} style={[styles.serviceTile, { width: tileWidth, borderColor: colors.goldLine, backgroundColor: colors.surface }]}>
@@ -291,7 +296,6 @@ export default function HomeScreen() {
         <View style={styles.footerGap} />
         <Footer />
       </Animated.ScrollView>
-      <VideoPlayerModal video={openVideo} onClose={() => setOpenVideo(null)} />
     </View>
   );
 }
@@ -333,5 +337,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   serviceTitle: { fontSize: 13, lineHeight: 19 },
+  band: { minHeight: 420, justifyContent: "center", overflow: "hidden" },
+  bandCopy: { alignItems: "center", gap: spacing.md, paddingVertical: spacing["4xl"] },
+  bandEyebrow: { letterSpacing: 2 },
+  bandTitle: { maxWidth: 360 },
+  bandBody: { maxWidth: 340, marginBottom: spacing.sm },
+  serviceSection: { paddingBottom: spacing["2xl"], overflow: "hidden" },
   footerGap: { height: spacing["3xl"] + layout.tabBarHeight },
 });

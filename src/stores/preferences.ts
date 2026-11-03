@@ -15,6 +15,8 @@ type PreferencesState = {
   hasSeenOpening: boolean;
   reduceMotionOverride: boolean | null;
   market: MarketCode;
+  /** True once the shopper picked a country on the welcome screen (or in Account). */
+  marketChosen: boolean;
   setMarket: (market: MarketCode) => void;
   setLanguage: (language: AppLanguage) => void;
   setTheme: (theme: ThemePreference) => void;
@@ -38,6 +40,7 @@ const initialState = {
   hasSeenOpening: false,
   reduceMotionOverride: null as boolean | null,
   market: deviceMarket(),
+  marketChosen: false,
 };
 
 const storage = createJSONStorage(() => mmkvStorage as StateStorage);
@@ -46,7 +49,7 @@ export const usePreferencesStore = create<PreferencesState>()(
   persist(
     (set) => ({
       ...initialState,
-      setMarket: (market) => set({ market }),
+      setMarket: (market) => set({ market, marketChosen: true }),
       setLanguage: (language) => set({ language }),
       setTheme: (theme) => set({ theme }),
       markOpeningSeen: () => set({ hasSeenOpening: true }),
@@ -56,9 +59,10 @@ export const usePreferencesStore = create<PreferencesState>()(
     {
       name: 'velvety.preferences.v1',
       storage,
-      version: 3,
-      partialize: ({ language, theme, hasSeenOpening, reduceMotionOverride, market }) => ({
+      version: 4,
+      partialize: ({ language, theme, hasSeenOpening, reduceMotionOverride, market, marketChosen }) => ({
         market,
+        marketChosen,
         language,
         theme,
         hasSeenOpening,
@@ -68,7 +72,9 @@ export const usePreferencesStore = create<PreferencesState>()(
         const state = (persisted ?? {}) as Partial<PreferencesState>;
         // v3: light became the default; move shoppers still on "follow the phone" to light.
         const theme = version < 3 && (state.theme === undefined || state.theme === 'system') ? 'light' : state.theme;
-        return { ...initialState, ...state, theme, market: state.market ?? deviceMarket() } as PreferencesState;
+        // v4: everyone is asked for their country once.
+        const marketChosen = version < 4 ? false : (state.marketChosen ?? false);
+        return { ...initialState, ...state, theme, marketChosen, market: state.market ?? deviceMarket() } as PreferencesState;
       },
     },
   ),

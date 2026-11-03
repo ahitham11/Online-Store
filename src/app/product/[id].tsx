@@ -19,12 +19,7 @@ import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { GoldRule } from '@/components/ui/GoldRule';
 import { Icon } from '@/components/ui/Icon';
-import { VideoPlayerModal } from '@/components/media/VideoPlayerModal';
-import { VideoTile } from '@/components/media/VideoTile';
-import { CardGrid } from '@/components/ui/CardGrid';
-import type { BrandVideo } from '@/data/media';
 import { getProductBySlug, type SoldAs } from '@/data/catalog';
-import { videosForProduct } from '@/data/media';
 import { useCatalog } from '@/data/useCatalog';
 import { formatPrice, formatQuantity, stockState } from '@/lib/format';
 import { useMarket } from '@/hooks/useMarket';
@@ -85,8 +80,6 @@ export default function ProductScreen() {
     [catalog.data.categories, product?.categoryId],
   );
 
-  const [openVideo, setOpenVideo] = useState<BrandVideo | null>(null);
-  const videos = useMemo(() => (product ? videosForProduct(product.id) : []), [product]);
 
   const [selectedSku, setSelectedSku] = useState<string | null>(initialSku ?? null);
   const [quantity, setQuantity] = useState(1);
@@ -127,7 +120,6 @@ export default function ProductScreen() {
   const description = localized(product.descriptionAr, product.descriptionEn);
   const contentWidth = Math.min(width, layout.maxContentWidth + 160);
   const imageWidth = contentWidth - spacing.xl * 2;
-  const videoWidth = Math.floor((imageWidth - spacing.md) / 2);
   const shadeVariants = hasShades(product) ? product.variants : [];
   const sizes = hasSizes(product)
     ? product.variants.filter((item, index, list) => item.size && list.findIndex((other) => other.size === item.size) === index)
@@ -382,26 +374,12 @@ export default function ProductScreen() {
           </View>
         ) : null}
 
-        {videos.length ? (
-          <View style={styles.block}>
-            <AppText variant="label" tone="accent" style={styles.eyebrow} maxScale={1.2}>
-              {t('media.productTitle')}
-            </AppText>
-            <CardGrid>
-              {videos.map((video) => (
-                <VideoTile key={video.id} video={video} width={videoWidth} onPlay={setOpenVideo} />
-              ))}
-            </CardGrid>
-          </View>
-        ) : null}
-
         {variant?.sku ? (
           <AppText variant="caption" tone="tertiary" align="center" maxScale={1.2}>
             SKU {variant.sku}
           </AppText>
         ) : null}
       </ScrollView>
-      <VideoPlayerModal video={openVideo} onClose={() => setOpenVideo(null)} />
     </View>
   );
 }

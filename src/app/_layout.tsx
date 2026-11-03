@@ -7,6 +7,7 @@ import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { CountryGate } from '@/components/chrome/CountryGate';
 import { useAccountSync } from '@/hooks/useAccountSync';
 import { useAppFonts } from '@/lib/fonts';
 import { I18nProvider } from '@/lib/i18n';
@@ -65,7 +66,6 @@ function RootNavigator() {
         />
         <Stack.Screen name="policies/[slug]" />
         <Stack.Screen name="checkout" options={{ animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="videos" />
         <Stack.Screen name="orders/index" />
         <Stack.Screen name="orders/[id]" />
         <Stack.Screen
@@ -75,6 +75,7 @@ function RootNavigator() {
         <Stack.Screen name="lab" />
         <Stack.Screen name="+not-found" options={{ animation: 'fade' }} />
       </Stack>
+      <CountryGate />
     </>
   );
 }
