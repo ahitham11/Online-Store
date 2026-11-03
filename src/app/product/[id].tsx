@@ -19,7 +19,9 @@ import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { GoldRule } from '@/components/ui/GoldRule';
 import { Icon } from '@/components/ui/Icon';
+import { VideoRail } from '@/components/media/VideoRail';
 import { getProductBySlug, type SoldAs } from '@/data/catalog';
+import { videosForProduct } from '@/data/media';
 import { useCatalog } from '@/data/useCatalog';
 import { formatPrice, formatQuantity, stockState } from '@/lib/format';
 import { useMarket } from '@/hooks/useMarket';
@@ -79,6 +81,8 @@ export default function ProductScreen() {
     () => catalog.data.categories.find((item) => item.id === product?.categoryId) ?? null,
     [catalog.data.categories, product?.categoryId],
   );
+
+  const videos = useMemo(() => (product ? videosForProduct(product.id) : []), [product]);
 
   const [selectedSku, setSelectedSku] = useState<string | null>(initialSku ?? null);
   const [quantity, setQuantity] = useState(1);
@@ -370,6 +374,15 @@ export default function ProductScreen() {
             <AppText variant="body" tone="secondary" maxScale={1.3}>
               {description}
             </AppText>
+          </View>
+        ) : null}
+
+        {videos.length ? (
+          <View style={styles.block}>
+            <AppText variant="label" tone="accent" style={styles.eyebrow} maxScale={1.2}>
+              {t('media.productTitle')}
+            </AppText>
+            <VideoRail videos={videos} cardWidth={Math.min(180, width * 0.46)} />
           </View>
         ) : null}
 

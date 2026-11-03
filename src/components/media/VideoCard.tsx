@@ -49,7 +49,7 @@ export function VideoCard({ video, width }: Props) {
         )}
       </View>
       <View style={styles.footer}>
-        <AppText variant="subtitle" numberOfLines={1} style={styles.title} maxScale={1.2}>
+        <AppText variant="subtitle" numberOfLines={2} style={styles.title} maxScale={1.2}>
           {title}
         </AppText>
         {video.productId ? (

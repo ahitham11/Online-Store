@@ -17,8 +17,8 @@ import {
 } from "react-native";
 import Animated, { useAnimatedScrollHandler } from "react-native-reanimated";
 import { Footer } from "@/components/chrome/Footer";
-import { VideoCard } from "@/components/media/VideoCard";
-import { brandVideos } from "@/data/media";
+import { VideoRail } from "@/components/media/VideoRail";
+import { productVideos, storyVideos } from "@/data/media";
 import { GrainOverlay } from "@/components/chrome/GrainOverlay";
 import { useHeaderScroll } from "@/components/chrome/HeaderScrollContext";
 import { HeroSlider, type VelvetSlide } from "@/components/home/HeroSlider";
@@ -359,15 +359,12 @@ export default function HomeScreen() {
 
         <View style={[styles.section, { paddingHorizontal: gutter }]}>
           <SectionHeader eyebrow={t("media.eyebrow")} title={t("media.title")} />
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: spacing.md, alignItems: "flex-start" }}
-          >
-            {brandVideos.map((video) => (
-              <VideoCard key={video.id} video={video} width={Math.min(220, width * 0.56)} />
-            ))}
-          </ScrollView>
+          <VideoRail videos={productVideos} />
+        </View>
+
+        <View style={[styles.section, { paddingHorizontal: gutter }]}>
+          <SectionHeader eyebrow={t("media.storyEyebrow")} title={t("media.storyTitle")} />
+          <VideoRail videos={storyVideos} />
         </View>
 
         <View
