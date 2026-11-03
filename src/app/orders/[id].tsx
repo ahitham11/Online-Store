@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Monogram } from '@/components/brand/BrandMark';
+import { getWhatsAppUrl } from '@/data/brand';
 import { StackHeader } from '@/components/chrome/StackHeader';
 import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
@@ -183,6 +184,14 @@ export default function OrderScreen() {
               ) : null}
             </View>
 
+            {getWhatsAppUrl() ? (
+              <Button
+                label={t('orders.askWhatsapp')}
+                variant="outline"
+                icon="whatsapp"
+                onPress={() => Linking.openURL(getWhatsAppUrl(t('orders.whatsappMessage', { number: data.number }))!).catch(() => undefined)}
+              />
+            ) : null}
             <Button label={t('orders.continue')} variant="outline" onPress={() => router.replace('/')} />
           </>
         )}
