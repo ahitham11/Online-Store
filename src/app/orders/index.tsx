@@ -21,14 +21,17 @@ export default function OrdersScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { t, language, isRTL } = useI18n();
-  const signedIn = useSessionStore((state) => state.status === 'signedIn');
+  const sessionStatus = useSessionStore((state) => state.status);
+  const signedIn = sessionStatus === 'signedIn';
   const orders = useMyOrders();
 
   return (
     <View style={[styles.root, { backgroundColor: colors.bg }]}>
       <StackHeader title={t('orders.title')} eyebrow={t('account.eyebrow')} />
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing['4xl'] }]}>
-        {!signedIn ? (
+        {sessionStatus === 'restoring' ? (
+          <SkeletonBlock height={86} radius={radii.lg} />
+        ) : !signedIn ? (
           <EmptyState
             title={t('checkout.signInTitle')}
             body={t('orders.signInBody')}

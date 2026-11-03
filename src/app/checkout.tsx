@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { StackHeader } from '@/components/chrome/StackHeader';
@@ -111,6 +111,13 @@ export default function CheckoutScreen() {
   };
 
   const body = (() => {
+    if (authIsAvailable && status === 'restoring') {
+      return (
+        <View style={styles.loading}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      );
+    }
     if (!authIsAvailable || status !== 'signedIn') {
       return (
         <EmptyState
@@ -301,6 +308,10 @@ function Field({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+  },
+  loading: {
+    paddingVertical: spacing['4xl'],
+    alignItems: 'center',
   },
   content: {
     paddingHorizontal: spacing.xl,

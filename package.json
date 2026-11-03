@@ -13,7 +13,8 @@
     "doctor": "expo-doctor",
     "test": "node --test --experimental-strip-types tests/*.test.ts",
     "catalog:check": "node --experimental-strip-types scripts/import-catalog.ts --dry-run",
-    "catalog:import": "node --env-file=.env --experimental-strip-types scripts/import-catalog.ts"
+    "catalog:import": "node --env-file=.env --experimental-strip-types scripts/import-catalog.ts",
+    "catalog:sql": "node --experimental-strip-types scripts/catalog-to-sql.ts"
   },
   "dependencies": {
     "@expo-google-fonts/cormorant-garamond": "^0.4.1",

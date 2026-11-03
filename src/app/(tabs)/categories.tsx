@@ -125,7 +125,7 @@ export default function CategoriesScreen() {
               <Pressable
                 key={category.id}
                 accessibilityRole="button"
-                accessibilityLabel={`${name}, ${t('categories.count', { count })}`}
+                accessibilityLabel={`${name}, ${t('categories.productCount', { count })}`}
                 onPress={() => router.push(`/category/${category.id}`)}
                 style={({ pressed }) => [
                   styles.categoryRow,
@@ -159,7 +159,7 @@ export default function CategoriesScreen() {
                     {name}
                   </AppText>
                   <AppText variant="caption" tone="tertiary" maxScale={1.2}>
-                    {t('categories.count', { count })}
+                    {t('categories.productCount', { count })}
                   </AppText>
                 </View>
                 <Icon name="chevron" size={16} color={isDark ? colors.textTertiary : palette.plumSoft} mirrored />

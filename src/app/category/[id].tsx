@@ -27,7 +27,7 @@ export default function CategoryDetailScreen() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-  const { t, localized, isRTL, language } = useI18n();
+  const { t, localized, isRTL } = useI18n();
   const catalog = useCatalog();
 
   const category = useMemo(
@@ -99,20 +99,18 @@ export default function CategoryDetailScreen() {
             </View>
             <View style={styles.heroCopy}>
               <AppText variant="label" tone="accent" style={styles.heroEyebrow} maxScale={1.2}>
-                {t('categories.count', { count: products.length })}
+                {t('categories.productCount', { count: products.length })}
               </AppText>
               <AppText variant="title" maxScale={1.2}>
                 {headerTitle}
               </AppText>
               <GoldRule width="38%" style={styles.rule} />
               <AppText variant="caption" tone="tertiary" maxScale={1.2}>
-                {catalog.data.updatedAt
-                  ? t('common.year') +
-                    ' ' +
-                    new Date(catalog.data.updatedAt).toLocaleDateString(
-                      language === 'ar' ? 'ar-EG' : 'en-GB',
-                    )
-                  : t('common.notConfigured')}
+                {category.parentId === null && children.length > 0
+                  ? t('categories.count', { count: children.length })
+                  : t('categories.shadesCount', {
+                      count: products.reduce((n, product) => n + product.variants.length, 0),
+                    })}
               </AppText>
             </View>
           </View>

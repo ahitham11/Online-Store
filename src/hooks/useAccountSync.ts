@@ -36,7 +36,8 @@ export function useAccountSync() {
   useEffect(() => {
     if (!catalogReady) return;
     const { lines, replaceLines } = useBagStore.getState();
-    const next = repriceBag(lines, catalogRef.current, market);
+    // Use `catalog` itself: catalogRef is updated by a later effect in the same commit.
+    const next = repriceBag(lines, catalog, market);
     if (next !== lines) replaceLines(next);
   }, [catalogReady, catalog, market]);
 

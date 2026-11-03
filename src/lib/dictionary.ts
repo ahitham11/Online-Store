@@ -100,6 +100,8 @@ export const ar = {
   'categories.emptyBody': 'عند اعتماد الكتالوج، ستجدين هنا كل قسم بصورته وترتيبه.',
   'categories.search': 'ابحثي عن قسم',
   'categories.count': '{count} قسم',
+  'categories.productCount': '{count} منتجات',
+  'categories.shadesCount': '{count} لونًا ودرجة',
 
   'wishlist.eyebrow': 'محفوظاتك',
   'wishlist.title': 'المفضلة',
@@ -474,6 +476,8 @@ export const en: Record<TranslationKey, string> = {
   'categories.emptyBody': 'Once the catalog is approved, every room will appear here with its image and order.',
   'categories.search': 'Find a category',
   'categories.count': '{count} categories',
+  'categories.productCount': '{count} products',
+  'categories.shadesCount': '{count} shades',
 
   'wishlist.eyebrow': 'Your keepsakes',
   'wishlist.title': 'Wishlist',
