@@ -365,6 +365,10 @@ function NavRowView({ row, isRTL }: { row: NavRow; isRTL: boolean }) {
 const styles = StyleSheet.create({
   layer: {
     ...StyleSheet.absoluteFill,
+    // The closed panel waits just off-screen. Without clipping, on the web in
+    // Arabic it sits past the right edge and widens the page (the phone then
+    // zooms out and shows empty space under the tab bar).
+    overflow: 'hidden',
   },
   panel: {
     position: 'absolute',
