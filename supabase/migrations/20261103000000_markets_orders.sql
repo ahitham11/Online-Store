@@ -18,9 +18,11 @@ alter table public.product_variants
   add column if not exists prices jsonb not null default '{}'::jsonb,
   add column if not exists compare_at jsonb not null default '{}'::jsonb;
 
+-- Safe to re-run: drop first. NOT VALID skips old rows; new and updated rows are checked.
+alter table public.product_variants drop constraint if exists product_variants_prices_markets;
 alter table public.product_variants
   add constraint product_variants_prices_markets
-    check (prices ?| array['EG', 'AE', 'SA', 'IE'] and not (prices - array['EG', 'AE', 'SA', 'IE'] <> '{}'::jsonb));
+    check (prices ?| array['EG', 'AE', 'SA', 'IE'] and not (prices - array['EG', 'AE', 'SA', 'IE'] <> '{}'::jsonb)) not valid;
 
 -- ---------------------------------------------------------------------------
 -- Shipping rates (standard delivery per market)
@@ -44,6 +46,7 @@ insert into public.shipping_rates (market, currency, fee, free_over, eta_min_day
 on conflict (market) do nothing;
 
 alter table public.shipping_rates enable row level security;
+drop policy if exists "shipping: read active rates" on public.shipping_rates;
 create policy "shipping: read active rates" on public.shipping_rates
   for select to anon, authenticated using (is_active);
 revoke all on public.shipping_rates from anon, authenticated;
@@ -105,6 +108,7 @@ create table if not exists public.order_events (
 );
 create index if not exists order_events_order_idx on public.order_events (order_id, created_at);
 
+drop trigger if exists orders_touch on public.orders;
 create trigger orders_touch before update on public.orders
   for each row execute function public.touch_updated_at();
 
@@ -125,6 +129,7 @@ begin
 end;
 $$;
 
+drop trigger if exists orders_record_event on public.orders;
 create trigger orders_record_event after insert or update of status on public.orders
   for each row execute function public.record_order_event();
 
@@ -132,11 +137,14 @@ alter table public.orders       enable row level security;
 alter table public.order_items  enable row level security;
 alter table public.order_events enable row level security;
 
+drop policy if exists "orders: owner reads" on public.orders;
 create policy "orders: owner reads" on public.orders
   for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists "order items: owner reads" on public.order_items;
 create policy "order items: owner reads" on public.order_items
   for select to authenticated
   using (exists (select 1 from public.orders o where o.id = order_items.order_id and o.user_id = (select auth.uid())));
+drop policy if exists "order events: owner reads" on public.order_events;
 create policy "order events: owner reads" on public.order_events
   for select to authenticated
   using (exists (select 1 from public.orders o where o.id = order_events.order_id and o.user_id = (select auth.uid())));
