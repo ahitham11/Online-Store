@@ -173,11 +173,9 @@ never be prefixed with `EXPO_PUBLIC_`.
 4. Restart Metro. Home, categories, search and the new product page fill from
    Supabase.
 
-5. **Email sign-in:** in Supabase → Authentication → Email Templates → *Magic
-   Link*, put the code in the email body, e.g. `Your Velvety code: {{ .Token }}`.
-   The app asks for that code (no links, no passwords). For real volume, set a
-   custom SMTP sender under Authentication → SMTP, because Supabase's built-in
-   sender is rate-limited.
+5. **Sign-in:** in Supabase → Authentication → Sign In / Providers → Email,
+   switch **Confirm email** off and save. Customers then sign in with email and
+   password (6+ characters, any letters or digits) with no verification email.
 
 The service-role key is used only by the importer on your machine. It is never
 prefixed with `EXPO_PUBLIC_` and never reaches the app bundle.
@@ -197,11 +195,12 @@ prefixed with `EXPO_PUBLIC_` and never reaches the app bundle.
 - **Product page** (`src/app/product/[id].tsx`): gallery, shade swatches, size
   choice, stock state, savings, a quantity stepper clamped to stock,
   add-to-bag and wishlist. Product cards and search results open it.
-- **Email-code sign-in** (`src/app/sign-in.tsx`, `src/lib/auth.ts`,
-  `src/stores/session.ts`): the shopper enters her email and then a 6-digit
-  code; Arabic-Indic digits are accepted. Only the refresh token is stored, in
-  the device keychain via `expo-secure-store`; the access token stays in memory
-  and refreshes automatically.
+- **Email + password sign-in** (`src/app/sign-in.tsx`, `src/lib/auth.ts`,
+  `src/stores/session.ts`): one form, with a link to switch between sign in
+  and new account. There is no verification email, and any password of 6+
+  characters is accepted. Only the refresh token is stored, in the device
+  keychain via `expo-secure-store`; the access token stays in memory and
+  refreshes automatically.
 - **Bag and wishlist sync** (`src/lib/accountSync.ts`,
   `src/hooks/useAccountSync.ts`): on sign-in the device and server copies are
   merged (the larger quantity wins, never doubled), then later changes are
@@ -232,6 +231,6 @@ prefixed with `EXPO_PUBLIC_` and never reaches the app bundle.
 | --- | --- | --- |
 | 1 | Tokens, RTL, navigation, chrome, hero, opening, measured 3D comparison | Complete |
 | 2 | Supabase schema/RLS, catalog ingestion, product detail | **Complete. Needs your Supabase project and catalog** |
-| 2b | Supabase Auth (email code) and wishlist/bag server sync | **Complete. Needs the email template change above** |
+| 2b | Supabase Auth (email + password) and wishlist/bag server sync | **Complete. Needs "Confirm email" switched off** |
 | 3 | Checkout, Paymob, shipping, orders, notifications | Next. Needs Paymob and courier accounts |
 | 4 | Admin, inventory, release hardening, store submission | Planned |

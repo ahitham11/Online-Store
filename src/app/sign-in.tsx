@@ -1,15 +1,14 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Monogram } from '@/components/brand/BrandMark';
 import { StackHeader } from '@/components/chrome/StackHeader';
 import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
-import { GoldRule } from '@/components/ui/GoldRule';
-import { AuthError, normalizeEmail, normalizeOtp } from '@/lib/auth';
-import { hapticSuccess } from '@/lib/haptics';
+import { AuthError, isAcceptablePassword, MIN_PASSWORD_LENGTH, normalizeEmail } from '@/lib/auth';
+import { hapticSuccess, hapticTap } from '@/lib/haptics';
 import { useI18n, type TranslationKey } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
 import { authIsAvailable, useSessionStore } from '@/stores/session';
@@ -17,8 +16,10 @@ import { hairline, radii, spacing } from '@/theme/tokens';
 
 const errorKeys: Record<AuthError['code'], TranslationKey> = {
   invalid_email: 'signIn.errorEmail',
-  invalid_code: 'signIn.errorCode',
-  expired: 'signIn.errorExpired',
+  invalid_credentials: 'signIn.errorCredentials',
+  weak_password: 'signIn.errorPassword',
+  user_exists: 'signIn.errorExists',
+  needs_confirmation: 'signIn.errorConfirmation',
   rate_limited: 'signIn.errorRateLimited',
   network: 'common.offlineBody',
   unknown: 'common.errorBody',
@@ -28,57 +29,51 @@ function errorKey(error: unknown): TranslationKey {
   return error instanceof AuthError ? errorKeys[error.code] : 'common.errorBody';
 }
 
-/** Two steps: email, then the one-time code from the email. */
+/** Email + password. One form; a link switches between sign in and new account. */
 export default function SignInScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { t } = useI18n();
-  const requestCode = useSessionStore((state) => state.requestCode);
-  const verifyCode = useSessionStore((state) => state.verifyCode);
+  const signIn = useSessionStore((state) => state.signIn);
+  const signUp = useSessionStore((state) => state.signUp);
 
-  const [step, setStep] = useState<'email' | 'code'>('email');
+  const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<TranslationKey | null>(null);
-  const [notice, setNotice] = useState<TranslationKey | null>(null);
+  const [error, setError] = useState<{ key: TranslationKey; count?: number } | null>(null);
 
   const close = () => {
     if (router.canGoBack()) router.back();
     else router.replace('/account');
   };
 
-  const sendCode = async () => {
-    const clean = normalizeEmail(email);
-    if (!clean) return setError('signIn.errorEmail');
+  const submit = async () => {
+    if (busy) return;
+    if (!normalizeEmail(email)) return setError({ key: 'signIn.errorEmail' });
+    if (mode === 'signUp' && !isAcceptablePassword(password)) {
+      return setError({ key: 'signIn.errorPassword', count: MIN_PASSWORD_LENGTH });
+    }
+    if (!password) return setError({ key: 'signIn.errorCredentials' });
     setBusy(true);
     setError(null);
     try {
-      await requestCode(clean);
-      setEmail(clean);
-      setCode('');
-      setStep('code');
-      setNotice('signIn.codeSent');
+      if (mode === 'signUp') await signUp(email, password);
+      else await signIn(email, password);
+      hapticSuccess();
+      close();
     } catch (caught) {
-      setError(errorKey(caught));
+      setError({ key: errorKey(caught), count: MIN_PASSWORD_LENGTH });
     } finally {
       setBusy(false);
     }
   };
 
-  const confirm = async () => {
-    if (!normalizeOtp(code)) return setError('signIn.errorCode');
-    setBusy(true);
+  const switchMode = () => {
+    hapticTap();
+    setMode(mode === 'signIn' ? 'signUp' : 'signIn');
     setError(null);
-    try {
-      await verifyCode(email, code);
-      hapticSuccess();
-      close();
-    } catch (caught) {
-      setError(errorKey(caught));
-    } finally {
-      setBusy(false);
-    }
   };
 
   const inputStyle = [
@@ -88,7 +83,11 @@ export default function SignInScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: colors.bg }]}>
-      <StackHeader title={t('signIn.title')} eyebrow={t('account.eyebrow')} onBack={close} />
+      <StackHeader
+        title={mode === 'signIn' ? t('signIn.title') : t('signIn.createTitle')}
+        eyebrow={t('account.eyebrow')}
+        onBack={close}
+      />
       <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           keyboardShouldPersistTaps="handled"
@@ -106,22 +105,15 @@ export default function SignInScreen() {
                 {t('signIn.unavailableBody')}
               </AppText>
             </View>
-          ) : step === 'email' ? (
+          ) : (
             <View style={styles.block}>
-              <AppText variant="titleSmall" align="center" maxScale={1.2}>
-                {t('signIn.emailTitle')}
-              </AppText>
-              <AppText variant="bodySmall" tone="secondary" align="center" maxScale={1.3}>
-                {t('signIn.emailBody')}
-              </AppText>
               <TextInput
                 value={email}
                 onChangeText={(value) => {
                   setEmail(value);
                   setError(null);
                 }}
-                onSubmitEditing={sendCode}
-                placeholder="name@example.com"
+                placeholder={t('signIn.emailLabel')}
                 placeholderTextColor={colors.textTertiary}
                 accessibilityLabel={t('signIn.emailLabel')}
                 autoCapitalize="none"
@@ -129,78 +121,61 @@ export default function SignInScreen() {
                 autoCorrect={false}
                 keyboardType="email-address"
                 textContentType="emailAddress"
-                returnKeyType="send"
-                autoFocus
+                returnKeyType="next"
                 style={[inputStyle, styles.ltr]}
               />
-              <Button label={t('signIn.sendCode')} icon="arrow" iconPosition="end" loading={busy} onPress={sendCode} />
-            </View>
-          ) : (
-            <View style={styles.block}>
-              <AppText variant="titleSmall" align="center" maxScale={1.2}>
-                {t('signIn.codeTitle')}
-              </AppText>
-              <AppText variant="bodySmall" tone="secondary" align="center" maxScale={1.3}>
-                {t('signIn.codeBody', { email })}
-              </AppText>
-              <TextInput
-                value={code}
-                onChangeText={(value) => {
-                  setCode(value);
-                  setError(null);
-                }}
-                onSubmitEditing={confirm}
-                placeholder="••••••"
-                placeholderTextColor={colors.textTertiary}
-                accessibilityLabel={t('signIn.codeLabel')}
-                keyboardType="number-pad"
-                textContentType="oneTimeCode"
-                autoComplete="one-time-code"
-                maxLength={12}
-                returnKeyType="done"
-                autoFocus
-                style={[inputStyle, styles.ltr, styles.code]}
-              />
-              <Button label={t('signIn.confirm')} icon="check" loading={busy} onPress={confirm} />
-              <View style={styles.secondary}>
-                <Button
-                  label={t('signIn.resend')}
-                  variant="ghost"
-                  size="sm"
-                  fullWidth={false}
-                  disabled={busy}
-                  onPress={sendCode}
-                />
-                <Button
-                  label={t('signIn.changeEmail')}
-                  variant="ghost"
-                  size="sm"
-                  fullWidth={false}
-                  disabled={busy}
-                  onPress={() => {
-                    setStep('email');
-                    setNotice(null);
+              <View>
+                <TextInput
+                  value={password}
+                  onChangeText={(value) => {
+                    setPassword(value);
                     setError(null);
                   }}
+                  onSubmitEditing={submit}
+                  placeholder={t('signIn.passwordLabel')}
+                  placeholderTextColor={colors.textTertiary}
+                  accessibilityLabel={t('signIn.passwordLabel')}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete={mode === 'signUp' ? 'new-password' : 'current-password'}
+                  textContentType={mode === 'signUp' ? 'newPassword' : 'password'}
+                  returnKeyType="go"
+                  style={[inputStyle, styles.ltr]}
                 />
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? t('signIn.hidePassword') : t('signIn.showPassword')}
+                  onPress={() => setShowPassword(!showPassword)}
+                  hitSlop={8}
+                  style={styles.eye}>
+                  <AppText variant="caption" tone="secondary" maxScale={1.1}>
+                    {showPassword ? t('signIn.hidePassword') : t('signIn.showPassword')}
+                  </AppText>
+                </Pressable>
               </View>
+
+              {error ? (
+                <AppText variant="bodySmall" tone="danger" align="center" accessibilityLiveRegion="polite" maxScale={1.3}>
+                  {t(error.key, { count: error.count ?? MIN_PASSWORD_LENGTH })}
+                </AppText>
+              ) : null}
+
+              <Button
+                label={mode === 'signIn' ? t('signIn.submit') : t('signIn.create')}
+                icon={mode === 'signIn' ? 'user' : 'plus'}
+                loading={busy}
+                onPress={submit}
+              />
+              <Button
+                label={mode === 'signIn' ? t('signIn.toCreate') : t('signIn.toSignIn')}
+                variant="ghost"
+                size="sm"
+                disabled={busy}
+                onPress={switchMode}
+              />
             </View>
           )}
-
-          {error ? (
-            <AppText variant="bodySmall" tone="danger" align="center" accessibilityLiveRegion="polite" maxScale={1.3}>
-              {t(error)}
-            </AppText>
-          ) : notice ? (
-            <AppText variant="caption" tone="success" align="center" accessibilityLiveRegion="polite" maxScale={1.3}>
-              {t(notice)}
-            </AppText>
-          ) : null}
-
-          <GoldRule width="40%" style={styles.rule} />
-          <AppText variant="caption" tone="tertiary" align="center" maxScale={1.2}>
-            {t('signIn.privacy')}
-          </AppText>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -226,7 +201,7 @@ const styles = StyleSheet.create({
     height: 52,
     borderWidth: hairline,
     borderRadius: radii.pill,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: 64,
     fontSize: 16,
     outlineStyle: 'none',
   } as object,
@@ -234,17 +209,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'ltr',
   },
-  code: {
-    fontSize: 22,
-    letterSpacing: 8,
-  },
-  secondary: {
-    flexDirection: 'row',
+  eye: {
+    position: 'absolute',
+    right: spacing.lg,
+    top: 0,
+    bottom: 0,
     justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  rule: {
-    alignSelf: 'center',
   },
 });

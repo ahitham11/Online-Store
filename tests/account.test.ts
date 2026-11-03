@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { createSyncClient, mergeBag, mergeWishlist } from '../src/lib/accountSync.ts';
-import { AuthError, createAuthClient, isExpiring, normalizeEmail, normalizeOtp } from '../src/lib/auth.ts';
+import { AuthError, createAuthClient, isAcceptablePassword, isExpiring, normalizeEmail } from '../src/lib/auth.ts';
 import { parseCatalog } from '../src/data/catalogSchema.ts';
 import type { BagLine } from '../src/stores/bag.ts';
 
@@ -26,11 +26,10 @@ test('emails are trimmed and lowercased; bad ones are rejected', () => {
   assert.equal(normalizeEmail('not an email'), null);
 });
 
-test('codes accept Arabic-Indic digits, spaces and dashes', () => {
-  assert.equal(normalizeOtp('١٢٣ ٤٥٦'), '123456');
-  assert.equal(normalizeOtp('۱۲۳-۴۵۶'), '123456');
-  assert.equal(normalizeOtp('12345'), null);
-  assert.equal(normalizeOtp('12a456'), null);
+test('any password of 6+ characters is accepted, Arabic included', () => {
+  assert.equal(isAcceptablePassword('123456'), true);
+  assert.equal(isAcceptablePassword('كلمةسر'), true);
+  assert.equal(isAcceptablePassword('abcde'), false);
 });
 
 test('isExpiring uses a safety margin', () => {
@@ -38,51 +37,58 @@ test('isExpiring uses a safety margin', () => {
   assert.equal(isExpiring({ expiresAt: 1_000 }, 950), true);
 });
 
-test('requestEmailCode posts the normalized email and allows new shoppers', async () => {
+test('signUp posts email + password and returns the session straight away', async () => {
   const calls: Call[] = [];
-  const auth = createAuthClient(config, fakeFetch({ '/auth/v1/otp': { body: {} } }, calls));
-  assert.equal(await auth.requestEmailCode(' Sara@Example.com'), 'sara@example.com');
-  assert.deepEqual(calls[0].body, { email: 'sara@example.com', create_user: true });
-  assert.equal(calls[0].headers?.apikey, 'anon');
-  await assert.rejects(auth.requestEmailCode('nope'), (error: AuthError) => error.code === 'invalid_email');
-});
-
-test('verifyEmailCode returns a session and classifies failures', async () => {
-  const calls: Call[] = [];
-  const ok = createAuthClient(
+  const auth = createAuthClient(
     config,
     fakeFetch(
-      {
-        '/auth/v1/verify': {
-          body: { access_token: 'a', refresh_token: 'r', expires_in: 3600, user: { id: 'u1', email: 'sara@example.com' } },
-        },
-      },
+      { '/auth/v1/signup': { body: { access_token: 'a', refresh_token: 'r', expires_in: 3600, user: { id: 'u1', email: 'sara@example.com' } } } },
       calls,
     ),
     () => 1_000,
   );
-  const session = await ok.verifyEmailCode('sara@example.com', '١٢٣٤٥٦');
-  assert.deepEqual(calls[0].body, { type: 'email', email: 'sara@example.com', token: '123456' });
-  assert.deepEqual(session, {
-    accessToken: 'a',
-    refreshToken: 'r',
-    expiresAt: 4_600,
-    user: { id: 'u1', email: 'sara@example.com' },
-  });
+  const session = await auth.signUp(' Sara@Example.com', 'pass12');
+  assert.deepEqual(calls[0].body, { email: 'sara@example.com', password: 'pass12' });
+  assert.equal(calls[0].headers?.apikey, 'anon');
+  assert.deepEqual(session, { accessToken: 'a', refreshToken: 'r', expiresAt: 4_600, user: { id: 'u1', email: 'sara@example.com' } });
+  await assert.rejects(auth.signUp('sara@example.com', '123'), (error: AuthError) => error.code === 'weak_password');
+  await assert.rejects(auth.signUp('nope', '123456'), (error: AuthError) => error.code === 'invalid_email');
+});
 
-  const expired = createAuthClient(
+test('signUp reports when email confirmation is still switched on', async () => {
+  const auth = createAuthClient(config, fakeFetch({ '/auth/v1/signup': { body: { id: 'u1', email: 'sara@example.com' } } }, []));
+  await assert.rejects(auth.signUp('sara@example.com', '123456'), (error: AuthError) => error.code === 'needs_confirmation');
+});
+
+test('signIn uses the password grant and classifies failures', async () => {
+  const calls: Call[] = [];
+  const ok = createAuthClient(
     config,
-    fakeFetch({ '/auth/v1/verify': { status: 403, body: { error_code: 'otp_expired', msg: 'Token has expired or is invalid' } } }, []),
+    fakeFetch({ 'grant_type=password': { body: { access_token: 'a', refresh_token: 'r', expires_at: 9_999, user: { id: 'u1', email: 'sara@example.com' } } } }, calls),
   );
-  await assert.rejects(expired.verifyEmailCode('sara@example.com', '123456'), (error: AuthError) => error.code === 'expired');
+  const session = await ok.signIn('sara@example.com', 'pass12');
+  assert.deepEqual(calls[0].body, { email: 'sara@example.com', password: 'pass12' });
+  assert.equal(session.expiresAt, 9_999);
 
-  const limited = createAuthClient(config, fakeFetch({ '/auth/v1/otp': { status: 429, body: {} } }, []));
-  await assert.rejects(limited.requestEmailCode('sara@example.com'), (error: AuthError) => error.code === 'rate_limited');
+  const wrong = createAuthClient(
+    config,
+    fakeFetch({ 'grant_type=password': { status: 400, body: { error_code: 'invalid_credentials', msg: 'Invalid login credentials' } } }, []),
+  );
+  await assert.rejects(wrong.signIn('sara@example.com', 'nope12'), (error: AuthError) => error.code === 'invalid_credentials');
+
+  const exists = createAuthClient(
+    config,
+    fakeFetch({ '/auth/v1/signup': { status: 422, body: { error_code: 'user_already_exists', msg: 'User already registered' } } }, []),
+  );
+  await assert.rejects(exists.signUp('sara@example.com', '123456'), (error: AuthError) => error.code === 'user_exists');
+
+  const limited = createAuthClient(config, fakeFetch({ 'grant_type=password': { status: 429, body: {} } }, []));
+  await assert.rejects(limited.signIn('sara@example.com', '123456'), (error: AuthError) => error.code === 'rate_limited');
 
   const offline = createAuthClient(config, async () => {
     throw new Error('offline');
   });
-  await assert.rejects(offline.requestEmailCode('sara@example.com'), (error: AuthError) => error.code === 'network');
+  await assert.rejects(offline.signIn('sara@example.com', '123456'), (error: AuthError) => error.code === 'network');
 });
 
 test('refresh uses the refresh-token grant', async () => {

@@ -18,8 +18,8 @@ type SessionState = {
   status: Status;
   user: AuthUser | null;
   restore: () => Promise<void>;
-  requestCode: (email: string) => Promise<string>;
-  verifyCode: (email: string, code: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   /** A valid access token, refreshed when close to expiry; null when signed out. */
   getAccessToken: () => Promise<string | null>;
@@ -84,14 +84,16 @@ export const useSessionStore = create<SessionState>()((set, get) => {
       }
     },
 
-    async requestCode(email) {
+    async signIn(email, password) {
       if (!auth) throw new AuthError('unknown', 0, 'Sign-in is not configured');
-      return auth.requestEmailCode(email);
+      const session = await auth.signIn(email, password);
+      await persist(session);
+      set({ status: 'signedIn', user: session.user });
     },
 
-    async verifyCode(email, code) {
+    async signUp(email, password) {
       if (!auth) throw new AuthError('unknown', 0, 'Sign-in is not configured');
-      const session = await auth.verifyEmailCode(email, code);
+      const session = await auth.signUp(email, password);
       await persist(session);
       set({ status: 'signedIn', user: session.user });
     },

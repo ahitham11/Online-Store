@@ -1,11 +1,12 @@
 import type { SupabaseConfig } from './env.ts';
 
 /**
- * Minimal Supabase Auth (GoTrue) client for one-time email codes.
+ * Minimal Supabase Auth (GoTrue) client: email + password, no email
+ * verification. In the Supabase dashboard, Authentication → Sign In / Providers
+ * → Email must have "Confirm email" switched off, so a new account is signed in
+ * immediately (see README).
  *
- * Plain `fetch` keeps the bundle free of extra dependencies. In the Supabase
- * dashboard, the "Magic Link" email template must include `{{ .Token }}` so the
- * email carries the 6-digit code (see README).
+ * Plain `fetch` keeps the bundle free of extra dependencies.
  */
 
 export type AuthUser = {
@@ -28,7 +29,15 @@ export type FetchLike = (
 
 export class AuthError extends Error {
   readonly status: number;
-  readonly code: 'invalid_email' | 'invalid_code' | 'rate_limited' | 'expired' | 'network' | 'unknown';
+  readonly code:
+    | 'invalid_email'
+    | 'invalid_credentials'
+    | 'weak_password'
+    | 'user_exists'
+    | 'needs_confirmation'
+    | 'rate_limited'
+    | 'network'
+    | 'unknown';
   constructor(code: AuthError['code'], status: number, message: string) {
     super(message);
     this.name = 'AuthError';
@@ -44,13 +53,11 @@ export function normalizeEmail(value: string): string | null {
   return EMAIL.test(email) ? email : null;
 }
 
-/** Accepts Arabic-Indic and Persian digits, spaces and dashes. */
-export function normalizeOtp(value: string): string | null {
-  const latin = value
-    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
-    .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 0x06f0))
-    .replace(/[\s-]/g, '');
-  return /^\d{6,10}$/.test(latin) ? latin : null;
+/** Supabase's minimum. Any characters are allowed: letters, digits, Arabic. */
+export const MIN_PASSWORD_LENGTH = 6;
+
+export function isAcceptablePassword(value: string) {
+  return value.length >= MIN_PASSWORD_LENGTH;
 }
 
 /** True when the access token expires within `marginSeconds`. */
@@ -79,13 +86,19 @@ export function toSession(body: TokenResponse, nowSeconds: number): AuthSession 
 }
 
 function classify(status: number, body: unknown): AuthError {
-  const payload = (body ?? {}) as { error_code?: string; msg?: string; error_description?: string; message?: string };
+  const payload = (body ?? {}) as { error_code?: string; code?: string; msg?: string; error_description?: string; message?: string };
   const message = payload.msg ?? payload.error_description ?? payload.message ?? `Auth request failed (${status})`;
-  const code = payload.error_code ?? '';
+  const code = payload.error_code ?? payload.code ?? '';
   if (status === 429 || code.includes('rate_limit')) return new AuthError('rate_limited', status, message);
-  if (code === 'otp_expired' || /expired/i.test(message)) return new AuthError('expired', status, message);
+  if (code === 'user_already_exists' || code === 'email_exists' || /already registered/i.test(message)) {
+    return new AuthError('user_exists', status, message);
+  }
+  if (code === 'weak_password' || /password should be/i.test(message)) return new AuthError('weak_password', status, message);
+  if (code === 'email_not_confirmed') return new AuthError('needs_confirmation', status, message);
+  if (code === 'invalid_credentials' || /invalid login credentials/i.test(message)) {
+    return new AuthError('invalid_credentials', status, message);
+  }
   if (code === 'validation_failed' || code === 'email_address_invalid') return new AuthError('invalid_email', status, message);
-  if (status === 401 || status === 403 || /token|otp/i.test(message)) return new AuthError('invalid_code', status, message);
   return new AuthError('unknown', status, message);
 }
 
@@ -113,20 +126,22 @@ export function createAuthClient(config: SupabaseConfig, fetchImpl: FetchLike = 
   }
 
   return {
-    /** Sends a one-time code. New shoppers are created on first sign-in. */
-    async requestEmailCode(email: string) {
+    /** Creates an account and returns its session straight away. */
+    async signUp(email: string, password: string): Promise<AuthSession> {
       const clean = normalizeEmail(email);
       if (!clean) throw new AuthError('invalid_email', 400, 'Invalid email address');
-      await call('/otp', { email: clean, create_user: true });
-      return clean;
+      if (!isAcceptablePassword(password)) throw new AuthError('weak_password', 400, 'Password too short');
+      const body = (await call('/signup', { email: clean, password })) as TokenResponse;
+      // With "Confirm email" still switched on, Supabase returns a user but no session.
+      if (!body.access_token) throw new AuthError('needs_confirmation', 200, 'Email confirmation is switched on');
+      return toSession(body, now());
     },
 
-    async verifyEmailCode(email: string, code: string): Promise<AuthSession> {
+    async signIn(email: string, password: string): Promise<AuthSession> {
       const clean = normalizeEmail(email);
-      const token = normalizeOtp(code);
       if (!clean) throw new AuthError('invalid_email', 400, 'Invalid email address');
-      if (!token) throw new AuthError('invalid_code', 400, 'Invalid code');
-      const body = (await call('/verify', { type: 'email', email: clean, token })) as TokenResponse;
+      if (!password) throw new AuthError('invalid_credentials', 400, 'Missing password');
+      const body = (await call('/token?grant_type=password', { email: clean, password })) as TokenResponse;
       return toSession(body, now());
     },
 
