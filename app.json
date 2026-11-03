@@ -51,7 +51,8 @@
           "supportsRTL": false,
           "forcesRTL": false
         }
-      ]
+      ],
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
