@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
 
+import type { MarketCode } from '@/lib/markets';
 import { mmkvStorage } from '@/lib/storage';
 
 export type BagLine = {
@@ -14,7 +15,9 @@ export type BagLine = {
   shadeHex?: string | null;
   size?: string | null;
   soldAs?: 'piece' | 'box' | 'set' | 'bundle';
-  unitPriceEgp: number;
+  /** Unit price in the line's market currency. */
+  unitPrice: number;
+  market: MarketCode;
   quantity: number;
   imageUri?: string | null;
 };
@@ -25,6 +28,7 @@ type BagState = {
   removeLine: (key: string) => void;
   setQuantity: (key: string, quantity: number) => void;
   clear: () => void;
+  replaceLines: (lines: BagLine[]) => void;
 };
 
 export const useBagStore = create<BagState>()(
@@ -52,11 +56,24 @@ export const useBagStore = create<BagState>()(
               : state.lines.map((line) => (line.key === key ? { ...line, quantity } : line)),
         })),
       clear: () => set({ lines: [] }),
+      replaceLines: (lines) => set({ lines }),
     }),
     {
       name: 'velvety.bag.v1',
       storage: createJSONStorage(() => mmkvStorage as StateStorage),
-      version: 1,
+      version: 2,
+      // v1 stored EGP-only prices; they are re-priced from the catalog on load.
+      migrate: (persisted, version) => {
+        const state = (persisted ?? { lines: [] }) as { lines: (BagLine & { unitPriceEgp?: number })[] };
+        if (version < 2) {
+          state.lines = state.lines.map(({ unitPriceEgp, ...line }) => ({
+            ...line,
+            unitPrice: line.unitPrice ?? unitPriceEgp ?? 0,
+            market: line.market ?? 'EG',
+          }));
+        }
+        return state as BagState;
+      },
     },
   ),
 );
@@ -65,4 +82,4 @@ export const selectBagCount = (state: BagState) =>
   state.lines.reduce((total, line) => total + line.quantity, 0);
 
 export const selectBagSubtotal = (state: BagState) =>
-  state.lines.reduce((total, line) => total + line.quantity * line.unitPriceEgp, 0);
+  state.lines.reduce((total, line) => total + line.quantity * line.unitPrice, 0);

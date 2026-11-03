@@ -30,9 +30,9 @@ export function VelvetShader({
   style,
   children,
 }: Props) {
-  const { isDark } = useTheme();
-  const deep = isDark ? '#160A13' : palette.aubergineDeep;
-  const rose = variant === 'pearl' ? '#3A1732' : palette.aubergineSoft;
+  const { colors, isDark } = useTheme();
+  const deep = colors.stageDeep;
+  const rose = variant === 'pearl' ? colors.stageMid : colors.stageMid;
   const glow = variant === 'pearl' ? palette.champagne : palette.rose;
 
   return (
@@ -58,7 +58,14 @@ export function VelvetShader({
         end={{ x: 1, y: 0.5 }}
         style={[styles.band, styles.bandTwo, { transform: [{ rotate: '14deg' }] }]}
       />
-      <View style={[styles.vignette, { opacity: variant === 'pearl' ? 0.32 : 0.62 }]} />
+      <View
+        style={[
+          styles.vignette,
+          isDark
+            ? { opacity: variant === 'pearl' ? 0.32 : 0.62 }
+            : { opacity: 0.08, backgroundColor: palette.champagne },
+        ]}
+      />
       <View
         pointerEvents="none"
         style={[

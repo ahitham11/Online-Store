@@ -1,3 +1,6 @@
+import { formatPrice } from './markets.ts';
+
+/** Kept for existing callers and tests: Egyptian pounds. Use formatPrice for other markets. */
 export function formatEgp(value: number, language: 'ar' | 'en' = 'ar', decimals = false) {
   const formatter = new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-EG', {
     numberingSystem: 'latn',
@@ -6,6 +9,8 @@ export function formatEgp(value: number, language: 'ar' | 'en' = 'ar', decimals 
   });
   return `${formatter.format(value)} ${language === 'ar' ? 'ج.م' : 'EGP'}`;
 }
+
+export { formatPrice };
 
 export function formatQuantity(value: number, language: 'ar' | 'en' = 'ar') {
   const formatter = new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-EG', {
@@ -31,6 +36,6 @@ export function availableStock(onHand: number, reserved: number) {
  * Price in minor units is never guessed. The importer validates the catalog
  * price before this helper is called.
  */
-export function lineTotal(unitPriceEgp: number, quantity: number) {
-  return Math.round(unitPriceEgp * quantity * 100) / 100;
+export function lineTotal(unitPrice: number, quantity: number) {
+  return Math.round(unitPrice * quantity * 100) / 100;
 }

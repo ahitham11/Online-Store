@@ -1,0 +1,1169 @@
+{
+  "updatedAt": "2026-11-03T12:00:00+00:00",
+  "categories": [
+    {
+      "id": "lips",
+      "parentId": null,
+      "nameAr": "الشفاه",
+      "nameEn": "Lips",
+      "image": "https://velvety-atelier.expo.app/catalog/cat-lips.webp",
+      "sortOrder": 1
+    },
+    {
+      "id": "cheeks",
+      "parentId": null,
+      "nameAr": "الخدود",
+      "nameEn": "Cheeks",
+      "image": "https://velvety-atelier.expo.app/catalog/cat-cheeks.webp",
+      "sortOrder": 2
+    },
+    {
+      "id": "tools",
+      "parentId": null,
+      "nameAr": "الأدوات والإكسسوارات",
+      "nameEn": "Tools & accessories",
+      "image": "https://velvety-atelier.expo.app/catalog/cat-tools.webp",
+      "sortOrder": 3
+    }
+  ],
+  "products": [
+    {
+      "id": "lip-gloss",
+      "categoryId": "lips",
+      "nameEn": "Lip Gloss",
+      "nameAr": "ملمّع الشفاه",
+      "descriptionEn": "Deep hydration, long-lasting colour and a stunning glassy shine. Each shade reflects a different side of femininity.",
+      "descriptionAr": "ترطيب عميق، لون يدوم طويلًا ولمعان زجاجي ساحر. كل لون يعكس لمسة مختلفة من الأنوثة.",
+      "soldAs": "piece",
+      "tags": [
+        "NEW",
+        "BESTSELLER"
+      ],
+      "images": [
+        "https://velvety-atelier.expo.app/catalog/gloss-0.webp",
+        "https://velvety-atelier.expo.app/catalog/gloss-1.webp",
+        "https://velvety-atelier.expo.app/catalog/gloss-2.webp",
+        "https://velvety-atelier.expo.app/catalog/gloss-3.webp",
+        "https://velvety-atelier.expo.app/catalog/gloss-4.webp"
+      ],
+      "variants": [
+        {
+          "sku": "VV-GL-01",
+          "shadeNameEn": "01 Soft Nude",
+          "shadeNameAr": "01 نيود ناعم",
+          "shadeHex": "#B3665A",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-01.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-02",
+          "shadeNameEn": "02 Black Cherry",
+          "shadeNameAr": "02 كرز داكن",
+          "shadeHex": "#623034",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-02.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-03",
+          "shadeNameEn": "03 Cherry Pop",
+          "shadeNameAr": "03 كرز لامع",
+          "shadeHex": "#C7323B",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-03.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-04",
+          "shadeNameEn": "04 Mauve Muse",
+          "shadeNameAr": "04 موف ملهم",
+          "shadeHex": "#8D5468",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-04.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-05",
+          "shadeNameEn": "05 Toasted Rose",
+          "shadeNameAr": "05 ورد محمّص",
+          "shadeHex": "#9E554B",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-05.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-06",
+          "shadeNameEn": "06 Terracotta",
+          "shadeNameAr": "06 تيراكوتا",
+          "shadeHex": "#B24938",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-06.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-07",
+          "shadeNameEn": "07 Mulberry",
+          "shadeNameAr": "07 توت أسود",
+          "shadeHex": "#7F3937",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-07.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-08",
+          "shadeNameEn": "08 Rose Petal",
+          "shadeNameAr": "08 بتلة ورد",
+          "shadeHex": "#BA5A65",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-08.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-09",
+          "shadeNameEn": "09 Ruby Kiss",
+          "shadeNameAr": "09 قبلة ياقوت",
+          "shadeHex": "#8B211D",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-09.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-10",
+          "shadeNameEn": "10 Cinnamon",
+          "shadeNameAr": "10 قرفة",
+          "shadeHex": "#934842",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-10.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-11",
+          "shadeNameEn": "11 Crystal Clear",
+          "shadeNameAr": "11 شفاف كريستالي",
+          "shadeHex": "#F1E8E2",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-11.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-12",
+          "shadeNameEn": "12 Scarlet Velvet",
+          "shadeNameAr": "12 قرمزي مخملي",
+          "shadeHex": "#8B1F1C",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-12.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-13",
+          "shadeNameEn": "13 Blush Pink",
+          "shadeNameAr": "13 وردي خجول",
+          "shadeHex": "#B7606F",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-13.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-14",
+          "shadeNameEn": "14 Honey Nude",
+          "shadeNameAr": "14 نيود عسلي",
+          "shadeHex": "#B57365",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-14.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-15",
+          "shadeNameEn": "15 Raspberry Glaze",
+          "shadeNameAr": "15 توت العليق",
+          "shadeHex": "#AE4E52",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-15.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-16",
+          "shadeNameEn": "16 Rosewood",
+          "shadeNameAr": "16 خشب الورد",
+          "shadeHex": "#A54A52",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-16.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-GL-17",
+          "shadeNameEn": "17 Spiced Brick",
+          "shadeNameAr": "17 طوب متبّل",
+          "shadeHex": "#893F37",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-gl-17.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        }
+      ]
+    },
+    {
+      "id": "powder-blush",
+      "categoryId": "cheeks",
+      "nameEn": "Powder Blush",
+      "nameAr": "بلاشر بودرة",
+      "descriptionEn": "Silky powder blush with a built-in mirror. Rich colour that lasts from the very first swipe.",
+      "descriptionAr": "بلاشر بودرة حريري بمرآة مدمجة. لون غني يدوم من أول لمسة.",
+      "soldAs": "piece",
+      "tags": [
+        "NEW"
+      ],
+      "images": [
+        "https://velvety-atelier.expo.app/catalog/powder-0.webp",
+        "https://velvety-atelier.expo.app/catalog/powder-1.webp",
+        "https://velvety-atelier.expo.app/catalog/powder-2.webp",
+        "https://velvety-atelier.expo.app/catalog/powder-3.webp"
+      ],
+      "variants": [
+        {
+          "sku": "VV-PB-01",
+          "shadeNameEn": "01 Dusty Rose",
+          "shadeNameAr": "01 وردي مغبّر",
+          "shadeHex": "#BA625A",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-pb-01.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-PB-02",
+          "shadeNameEn": "02 Coral Crush",
+          "shadeNameAr": "02 مرجاني",
+          "shadeHex": "#F36362",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-pb-02.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-PB-03",
+          "shadeNameEn": "03 Peach Silk",
+          "shadeNameAr": "03 خوخي حريري",
+          "shadeHex": "#D17D67",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-pb-03.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-PB-04",
+          "shadeNameEn": "04 Candy Pink",
+          "shadeNameAr": "04 وردي حلوى",
+          "shadeHex": "#FDA1D0",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-pb-04.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-PB-05",
+          "shadeNameEn": "05 Sunset Orange",
+          "shadeNameAr": "05 برتقالي الغروب",
+          "shadeHex": "#D74E2E",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-pb-05.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-PB-06",
+          "shadeNameEn": "06 Hot Pink",
+          "shadeNameAr": "06 وردي جريء",
+          "shadeHex": "#E6607E",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-pb-06.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-PB-07",
+          "shadeNameEn": "07 Burnt Amber",
+          "shadeNameAr": "07 كهرماني",
+          "shadeHex": "#C85D39",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-pb-07.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        }
+      ]
+    },
+    {
+      "id": "lip-liner",
+      "categoryId": "lips",
+      "nameEn": "Lip Liner",
+      "nameAr": "محدد الشفاه",
+      "descriptionEn": "Creamy, precise lip liner that glides on smoothly and holds its shape all day.",
+      "descriptionAr": "محدد شفاه كريمي ودقيق ينزلق بسلاسة ويحافظ على الرسم طوال اليوم.",
+      "soldAs": "piece",
+      "tags": [
+        "NEW"
+      ],
+      "images": [
+        "https://velvety-atelier.expo.app/catalog/liner-0.webp",
+        "https://velvety-atelier.expo.app/catalog/liner-1.webp",
+        "https://velvety-atelier.expo.app/catalog/liner-2.webp"
+      ],
+      "variants": [
+        {
+          "sku": "VV-LL-01",
+          "shadeNameEn": "01 Rosewood",
+          "shadeNameAr": "01 خشب الورد",
+          "shadeHex": "#945A57",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-01.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-02",
+          "shadeNameEn": "02 Nude Spice",
+          "shadeNameAr": "02 نيود متبّل",
+          "shadeHex": "#A56250",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-02.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-03",
+          "shadeNameEn": "03 Berry",
+          "shadeNameAr": "03 توتي",
+          "shadeHex": "#B7404F",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-03.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-04",
+          "shadeNameEn": "04 True Red",
+          "shadeNameAr": "04 أحمر صريح",
+          "shadeHex": "#EC3936",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-04.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-05",
+          "shadeNameEn": "05 Bare",
+          "shadeNameAr": "05 نيود فاتح",
+          "shadeHex": "#AF726B",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-05.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-06",
+          "shadeNameEn": "06 Peach",
+          "shadeNameAr": "06 خوخي",
+          "shadeHex": "#EF8976",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-06.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-07",
+          "shadeNameEn": "07 Raspberry",
+          "shadeNameAr": "07 توت العليق",
+          "shadeHex": "#D05260",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-07.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-08",
+          "shadeNameEn": "08 Mocha",
+          "shadeNameAr": "08 موكا",
+          "shadeHex": "#AC7466",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-08.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-09",
+          "shadeNameEn": "09 Coral",
+          "shadeNameAr": "09 مرجاني",
+          "shadeHex": "#F2877B",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-09.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-10",
+          "shadeNameEn": "10 Pink Nude",
+          "shadeNameAr": "10 نيود وردي",
+          "shadeHex": "#EC8C82",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-10.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-11",
+          "shadeNameEn": "11 Caramel",
+          "shadeNameAr": "11 كراميل",
+          "shadeHex": "#B76D59",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-11.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-12",
+          "shadeNameEn": "12 Chestnut",
+          "shadeNameAr": "12 كستنائي",
+          "shadeHex": "#7D3F32",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-12.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-13",
+          "shadeNameEn": "13 Mauve Brown",
+          "shadeNameAr": "13 موف بني",
+          "shadeHex": "#925753",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-13.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-LL-14",
+          "shadeNameEn": "14 Terracotta",
+          "shadeNameAr": "14 تيراكوتا",
+          "shadeHex": "#DC6E61",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-ll-14.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        }
+      ]
+    },
+    {
+      "id": "blush-stick",
+      "categoryId": "cheeks",
+      "nameEn": "Blush Stick",
+      "nameAr": "بلاشر ستيك",
+      "descriptionEn": "Rich colour, smooth texture and a natural radiant finish in one swipe. A rotating brush head blends it into the curves of your face.",
+      "descriptionAr": "لون غني وقوام ناعم ولمسة مشرقة طبيعية بحركة واحدة. فرشاة دوّارة لدمجه بسهولة مع ملامح وجهك.",
+      "soldAs": "piece",
+      "tags": [
+        "NEW"
+      ],
+      "images": [
+        "https://velvety-atelier.expo.app/catalog/stick-0.webp",
+        "https://velvety-atelier.expo.app/catalog/stick-1.webp",
+        "https://velvety-atelier.expo.app/catalog/stick-2.webp",
+        "https://velvety-atelier.expo.app/catalog/stick-3.webp"
+      ],
+      "variants": [
+        {
+          "sku": "VV-BS-01",
+          "shadeNameEn": "Natural Pink",
+          "shadeNameAr": "وردي طبيعي",
+          "shadeHex": "#E0817A",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-bs-01.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-BS-02",
+          "shadeNameEn": "Soft Coral",
+          "shadeNameAr": "مرجاني ناعم",
+          "shadeHex": "#DD6842",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-bs-02.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-BS-03",
+          "shadeNameEn": "Dustyrose",
+          "shadeNameAr": "وردي مغبّر",
+          "shadeHex": "#B05459",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-bs-03.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-BS-04",
+          "shadeNameEn": "Fuchsia",
+          "shadeNameAr": "فوشيا",
+          "shadeHex": "#CD4454",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-bs-04.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-BS-05",
+          "shadeNameEn": "Raspberry",
+          "shadeNameAr": "توت العليق",
+          "shadeHex": "#A84651",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-bs-05.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        }
+      ]
+    },
+    {
+      "id": "shea-lip-butter",
+      "categoryId": "lips",
+      "nameEn": "Shea Butter Lip Butter Balm",
+      "nameAr": "بلسم الشفاه بزبدة الشيا",
+      "descriptionEn": "More than a lip balm: an intensive treatment enriched with shea butter, natural oils and vitamins. It repairs dryness and leaves a soft natural tint.",
+      "descriptionAr": "أكثر من مجرد بلسم: علاج مكثّف غني بزبدة الشيا والزيوت الطبيعية والفيتامينات. يعالج الجفاف ويمنح لونًا طبيعيًا ناعمًا.",
+      "soldAs": "piece",
+      "tags": [
+        "NEW"
+      ],
+      "images": [
+        "https://velvety-atelier.expo.app/catalog/butter-0.webp",
+        "https://velvety-atelier.expo.app/catalog/butter-1.webp",
+        "https://velvety-atelier.expo.app/catalog/butter-2.webp",
+        "https://velvety-atelier.expo.app/catalog/butter-3.webp"
+      ],
+      "variants": [
+        {
+          "sku": "VV-SB-01",
+          "shadeNameEn": "Pink Petal",
+          "shadeNameAr": "بتلة وردية",
+          "shadeHex": "#DC637D",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-sb-01.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-SB-02",
+          "shadeNameEn": "Bare Cream",
+          "shadeNameAr": "كريمي عاري",
+          "shadeHex": "#DFB19A",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-sb-02.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-SB-03",
+          "shadeNameEn": "Caramel",
+          "shadeNameAr": "كراميل",
+          "shadeHex": "#D89F7E",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-sb-03.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-SB-04",
+          "shadeNameEn": "Mocha",
+          "shadeNameAr": "موكا",
+          "shadeHex": "#854D44",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-sb-04.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        },
+        {
+          "sku": "VV-SB-05",
+          "shadeNameEn": "Cocoa",
+          "shadeNameAr": "كاكاو",
+          "shadeHex": "#3A2524",
+          "size": null,
+          "images": [
+            "https://velvety-atelier.expo.app/catalog/vv-sb-05.webp"
+          ],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        }
+      ]
+    },
+    {
+      "id": "lip-combo",
+      "categoryId": "lips",
+      "nameEn": "Best Lip Combo",
+      "nameAr": "ثنائي الشفاه المفضل",
+      "descriptionEn": "Our favourite pairing: Lip Liner No. 09 with the Shea Butter Lip Balm.",
+      "descriptionAr": "الثنائي المفضل: محدد الشفاه رقم 09 مع بلسم الشفاه بزبدة الشيا.",
+      "soldAs": "set",
+      "tags": [
+        "SET"
+      ],
+      "images": [
+        "https://velvety-atelier.expo.app/catalog/combo-0.webp",
+        "https://velvety-atelier.expo.app/catalog/combo-1.webp"
+      ],
+      "variants": [
+        {
+          "sku": "VV-COMBO-09",
+          "shadeNameEn": "Liner 09 + Balm",
+          "shadeNameAr": "محدد 09 + بلسم",
+          "shadeHex": null,
+          "size": null,
+          "images": [],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        }
+      ]
+    },
+    {
+      "id": "bowder-brush",
+      "categoryId": "tools",
+      "nameEn": "Bowder Brush",
+      "nameAr": "فرشاة البلاشر والبودرة",
+      "descriptionEn": "Double-ended blush and powder brush. Soft bristles blend effortlessly for a smooth, velvety finish.",
+      "descriptionAr": "فرشاة برأسين للبلاشر والبودرة. شعيرات ناعمة تدمج بسهولة لنتيجة ناعمة مخملية.",
+      "soldAs": "piece",
+      "tags": [
+        "NEW"
+      ],
+      "images": [
+        "https://velvety-atelier.expo.app/catalog/brush-0.webp",
+        "https://velvety-atelier.expo.app/catalog/brush-1.webp",
+        "https://velvety-atelier.expo.app/catalog/brush-2.webp",
+        "https://velvety-atelier.expo.app/catalog/brush-3.webp"
+      ],
+      "variants": [
+        {
+          "sku": "VV-BRUSH",
+          "shadeNameEn": "Double-ended",
+          "shadeNameAr": "برأسين",
+          "shadeHex": null,
+          "size": null,
+          "images": [],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        }
+      ]
+    },
+    {
+      "id": "makeup-bag",
+      "categoryId": "tools",
+      "nameEn": "Makeup Bag",
+      "nameAr": "حقيبة المكياج",
+      "descriptionEn": "Sleek quilted bag in premium leather. Keeps your beauty essentials organised and stylish wherever you go.",
+      "descriptionAr": "حقيبة مبطّنة أنيقة من الجلد الفاخر. تحفظ أساسيات جمالك مرتّبة وأنيقة أينما ذهبتِ.",
+      "soldAs": "piece",
+      "tags": [
+        "NEW"
+      ],
+      "images": [
+        "https://velvety-atelier.expo.app/catalog/bag-0.webp",
+        "https://velvety-atelier.expo.app/catalog/bag-1.webp",
+        "https://velvety-atelier.expo.app/catalog/bag-2.webp",
+        "https://velvety-atelier.expo.app/catalog/bag-3.webp"
+      ],
+      "variants": [
+        {
+          "sku": "VV-BAG",
+          "shadeNameEn": "Black quilted",
+          "shadeNameAr": "أسود مبطّن",
+          "shadeHex": null,
+          "size": null,
+          "images": [],
+          "prices": {
+            "EG": 100,
+            "AE": 100,
+            "SA": 100,
+            "IE": 100
+          },
+          "available": 50,
+          "lowStockThreshold": 5
+        }
+      ]
+    }
+  ],
+  "heroSlides": [
+    {
+      "id": "hero-gloss",
+      "eyebrowEn": "New collection",
+      "eyebrowAr": "المجموعة الجديدة",
+      "titleEn": "Glass-shine lips",
+      "titleAr": "شفاه بلمعان زجاجي",
+      "bodyEn": "17 shades of deep hydration and long-lasting colour.",
+      "bodyAr": "17 لونًا من الترطيب العميق واللون الذي يدوم.",
+      "image": "https://velvety-atelier.expo.app/catalog/hero-gloss.webp",
+      "productId": "lip-gloss",
+      "deepLink": null
+    },
+    {
+      "id": "hero-blush",
+      "eyebrowEn": "Cheeks",
+      "eyebrowAr": "الخدود",
+      "titleEn": "Colour from the first swipe",
+      "titleAr": "لون من أول لمسة",
+      "bodyEn": "Powder blush with a built-in mirror, in seven shades.",
+      "bodyAr": "بلاشر بودرة بمرآة مدمجة بسبعة ألوان.",
+      "image": "https://velvety-atelier.expo.app/catalog/hero-blush.webp",
+      "productId": "powder-blush",
+      "deepLink": null
+    },
+    {
+      "id": "hero-stick",
+      "eyebrowEn": "Blush Stick",
+      "eyebrowAr": "بلاشر ستيك",
+      "titleEn": "One swipe, natural glow",
+      "titleAr": "لمسة واحدة، إشراقة طبيعية",
+      "bodyEn": "Natural Pink, Soft Coral, Dustyrose, Fuchsia and Raspberry.",
+      "bodyAr": "وردي طبيعي، مرجاني ناعم، وردي مغبّر، فوشيا وتوت العليق.",
+      "image": "https://velvety-atelier.expo.app/catalog/hero-stick.webp",
+      "productId": "blush-stick",
+      "deepLink": null
+    }
+  ],
+  "banners": [
+    {
+      "id": "banner-butter",
+      "placement": "two-up",
+      "titleEn": "Shea butter lip care",
+      "titleAr": "عناية الشفاه بزبدة الشيا",
+      "image": "https://velvety-atelier.expo.app/catalog/banner-butter.webp",
+      "deepLink": "/product/shea-lip-butter",
+      "sortOrder": 1
+    },
+    {
+      "id": "banner-liner",
+      "placement": "two-up",
+      "titleEn": "14 lip liner shades",
+      "titleAr": "14 لونًا لمحدد الشفاه",
+      "image": "https://velvety-atelier.expo.app/catalog/banner-liner.webp",
+      "deepLink": "/product/lip-liner",
+      "sortOrder": 2
+    },
+    {
+      "id": "banner-studio",
+      "placement": "full",
+      "titleEn": "Behind the scenes",
+      "titleAr": "من الكواليس",
+      "image": "https://velvety-atelier.expo.app/catalog/banner-studio.webp",
+      "deepLink": null,
+      "sortOrder": 3
+    }
+  ]
+}

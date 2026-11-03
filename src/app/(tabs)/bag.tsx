@@ -9,7 +9,10 @@ import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { GoldRule } from '@/components/ui/GoldRule';
 import { Icon } from '@/components/ui/Icon';
-import { formatEgp, lineTotal } from '@/lib/format';
+import { useShippingRate } from '@/data/useShipping';
+import { useMarket } from '@/hooks/useMarket';
+import { formatPrice, lineTotal } from '@/lib/format';
+import { shippingFee } from '@/lib/markets';
 import { hapticTap } from '@/lib/haptics';
 import { useI18n } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
@@ -30,6 +33,11 @@ export default function BagScreen() {
   const setQuantity = useBagStore((state) => state.setQuantity);
   const removeLine = useBagStore((state) => state.removeLine);
   const clear = useBagStore((state) => state.clear);
+  const market = useMarket();
+  const rate = useShippingRate(market.code);
+  const shipping = shippingFee(subtotal, rate);
+  const total = subtotal + shipping;
+  const toFreeShipping = rate.freeOver !== null && shipping > 0 ? rate.freeOver - subtotal : 0;
 
   const confirmClear = () => {
     if (lines.length === 0) return;
@@ -49,7 +57,7 @@ export default function BagScreen() {
     <Page
       eyebrow={t('bag.eyebrow')}
       title={t('bag.title')}
-      description={t('bag.catalogNote')}
+      description={t('bag.codNote')}
       headerAccessory={
         count > 0 ? (
           <AppText variant="caption" tone="tertiary" maxScale={1.2}>
@@ -61,9 +69,6 @@ export default function BagScreen() {
         lines.length > 0 ? (
           <View style={styles.footerBlock}>
             <GoldRule width="32%" style={styles.footerRule} />
-            <AppText variant="caption" tone="tertiary" align="center" maxScale={1.2}>
-              {t('bag.checkoutSoon')}
-            </AppText>
           </View>
         ) : null
       }>
@@ -111,34 +116,39 @@ export default function BagScreen() {
             ]}>
             <SummaryRow
               label={t('bag.subtotal')}
-              value={formatEgp(subtotal, language)}
+              value={formatPrice(subtotal, market.code, language)}
               strong
             />
             <View style={[styles.summaryRule, { backgroundColor: colors.border }]} />
             <SummaryRow
               label={t('bag.shipping')}
-              value={t('bag.shippingAtCheckout')}
-              muted
+              value={shipping === 0 ? t('bag.freeShipping') : formatPrice(shipping, market.code, language)}
+              muted={shipping === 0}
             />
             <View style={[styles.summaryRule, { backgroundColor: colors.border }]} />
             <SummaryRow
               label={t('bag.total')}
-              value={`${formatEgp(subtotal, language)} + ${t('bag.shipping')}`}
+              value={formatPrice(total, market.code, language)}
               strong
               accent
             />
           </View>
 
+          {toFreeShipping > 0 ? (
+            <AppText variant="caption" tone="accent" align="center" maxScale={1.2}>
+              {t('bag.toFreeShipping', { amount: formatPrice(toFreeShipping, market.code, language) })}
+            </AppText>
+          ) : null}
+          <AppText variant="caption" tone="tertiary" align="center" maxScale={1.2}>
+            {t('bag.deliveryEta', { min: rate.etaMinDays, max: rate.etaMaxDays, country: language === 'ar' ? market.nameAr : market.nameEn })}
+          </AppText>
+
           <Button
             label={t('bag.checkout')}
-            icon="lock"
+            icon="arrow"
             iconPosition="end"
-            disabled
-            accessibilityHint={t('bag.checkoutSoon')}
+            onPress={() => router.push('/checkout')}
           />
-          <AppText variant="caption" tone="tertiary" align="center" maxScale={1.2}>
-            {t('bag.checkoutSoon')}
-          </AppText>
 
           <Button
             label={t('bag.clear')}
@@ -182,7 +192,7 @@ function BagRow({
   onChangeQuantity,
   onRemove,
 }: BagRowProps) {
-  const total = lineTotal(line.unitPriceEgp, line.quantity);
+  const total = lineTotal(line.unitPrice, line.quantity);
 
   return (
     <View
@@ -270,11 +280,11 @@ function BagRow({
 
           <View style={styles.priceBlock}>
             <AppText variant="price" style={styles.price} maxScale={1.2}>
-              {formatEgp(total, currencyLanguage)}
+              {formatPrice(total, line.market, currencyLanguage)}
             </AppText>
             {line.quantity > 1 ? (
               <AppText variant="caption" tone="tertiary" maxScale={1.15}>
-                {formatEgp(line.unitPriceEgp, currencyLanguage)}
+                {formatPrice(line.unitPrice, line.market, currencyLanguage)}
               </AppText>
             ) : null}
           </View>

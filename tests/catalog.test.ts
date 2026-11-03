@@ -14,6 +14,6 @@ test('Phase 1 catalog is explicitly empty, not fixture data', () => {
 
 test('empty catalog never reports a fake update or price', () => {
   const serialized = JSON.stringify(emptyCatalog);
-  assert.equal(serialized.includes('priceEgp'), false);
+  assert.equal(serialized.includes('prices'), false);
   assert.equal(serialized.includes('EGP'), false);
 });

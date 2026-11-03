@@ -166,11 +166,11 @@ export function VelvetShader({
   const clock = useClock();
 
   const uniforms = useMemo(() => {
-    const deep = rgb(isDark ? colors.veil : palette.aubergineDeep);
-    const rose = rgb(variant === 'pearl' ? palette.aubergineSoft : palette.rose);
+    const deep = rgb(colors.stageDeep);
+    const rose = rgb(variant === 'pearl' ? colors.stageMid : isDark ? palette.rose : palette.roseLight);
     const gold = rgb(palette.champagne);
     return { uDeep: deep, uRose: rose, uGold: gold };
-  }, [colors.veil, isDark, variant]);
+  }, [colors.stageDeep, colors.stageMid, isDark, variant]);
 
   const animatedUniforms = useDerivedValue(() => {
     const time = active && !reducedMotion ? clock.value / 1000 : 0;

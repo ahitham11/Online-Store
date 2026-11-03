@@ -81,7 +81,7 @@ export function TiltCard({
   };
 
   return (
-    <GestureDetector gesture={pan}>
+    <GestureDetector gesture={pan} touchAction="pan-y">
       <Animated.View style={[sceneStyle, style]} onLayout={onLayout}>
         <View style={[styles.clip, { borderRadius: radius }]}>
           {children}

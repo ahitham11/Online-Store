@@ -4,12 +4,13 @@ A luxury beauty shopping app for Egypt, built for **@beautty_with_velvety**.
 
 Expo SDK 58 · React Native 0.88 · New Architecture · Expo Router · Reanimated 4 · Skia · strict TypeScript.
 
-> **Phase 1 status — foundation and signature chrome.**
-> The app is intentionally running against an **empty catalog**. No product,
-> price, shade, ingredient, review, or rating in this build is invented. Where
-> the catalog is empty you will see a designed empty state, not placeholder
-> merchandise. The brand identity is **provisional** until `assets/brand/` and
-> `catalog/catalog.json` are supplied (see [Provisional identity](#provisional-identity)).
+> **Phase 2 status: catalog pipeline and product pages.**
+> The app reads the published catalog from Supabase as soon as
+> `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` are set. Without
+> them, or until `catalog/catalog.json` is published, it keeps its designed empty
+> states. No product, price, shade, ingredient, review or rating in this build is
+> invented. The brand identity is **provisional** until `assets/brand/` is
+> supplied (see [Provisional identity](#provisional-identity)).
 
 ---
 
@@ -101,6 +102,7 @@ src/
   app/                 # Expo Router routes only
     (tabs)/            # home, categories, wishlist, bag, account
     category/[id].tsx  # category tree + product grid
+    product/[id].tsx   # product detail: shades, sizes, stock, add to bag
     policies/[slug].tsx
     search.tsx
     lab/               # __DEV__ motion/3D harness
@@ -120,7 +122,8 @@ src/
 tests/                 # node:test unit tests
 scripts/               # asset generators (brand icons, grain tile)
 docs/                  # 3D evaluation, phase notes
-catalog/               # (to be supplied) real catalog source of truth
+catalog/               # catalog.json source of truth (format in catalog/README.md)
+supabase/migrations/   # database schema + Row Level Security
 assets/brand/          # (to be supplied) real logo and brand assets
 ```
 
@@ -157,13 +160,77 @@ never be prefixed with `EXPO_PUBLIC_`.
 
 ---
 
+## Connect the live catalog (Phase 2)
+
+1. Create a Supabase project, then run
+   `supabase/migrations/20261102000000_catalog.sql` in the SQL editor (or
+   `supabase db push`). It creates the catalog, wishlist and bag tables, with
+   Row Level Security on every table.
+2. Copy `.env.example` to `.env` and fill in `EXPO_PUBLIC_SUPABASE_URL`,
+   `EXPO_PUBLIC_SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY`.
+3. Write `catalog/catalog.json` (format in [`catalog/README.md`](catalog/README.md)),
+   then run `npm run catalog:check` and `npm run catalog:import`.
+4. Restart Metro. Home, categories, search and the new product page fill from
+   Supabase.
+
+5. **Sign-in:** in Supabase → Authentication → Sign In / Providers → Email,
+   switch **Confirm email** off and save. Customers then sign in with email and
+   password (6+ characters, any letters or digits) with no verification email.
+
+The service-role key is used only by the importer on your machine. It is never
+prefixed with `EXPO_PUBLIC_` and never reaches the app bundle.
+
+## What Phase 2 adds
+
+- **Catalog validation** (`src/data/catalogSchema.ts`): zod rules for prices,
+  unique SKUs, category links and compare-at prices. A broken catalog is
+  rejected instead of shown.
+- **Supabase catalog reader** (`src/data/supabaseCatalog.ts`): PostgREST over
+  plain `fetch`, so no new native module. Published rows are validated again
+  before they render.
+- **Database schema and RLS** (`supabase/migrations/`): public read of active
+  catalog rows only; shoppers read and write only their own wishlist and bag.
+- **Importer** (`scripts/import-catalog.ts`): validates, then upserts the
+  catalog in dependency order.
+- **Product page** (`src/app/product/[id].tsx`): gallery, shade swatches, size
+  choice, stock state, savings, a quantity stepper clamped to stock,
+  add-to-bag and wishlist. Product cards and search results open it.
+- **Email + password sign-in** (`src/app/sign-in.tsx`, `src/lib/auth.ts`,
+  `src/stores/session.ts`): one form, with a link to switch between sign in
+  and new account. There is no verification email, and any password of 6+
+  characters is accepted. Only the refresh token is stored, in the device
+  keychain via `expo-secure-store`; the access token stays in memory and
+  refreshes automatically.
+- **Bag and wishlist sync** (`src/lib/accountSync.ts`,
+  `src/hooks/useAccountSync.ts`): on sign-in the device and server copies are
+  merged (the larger quantity wins, never doubled), then later changes are
+  pushed. Prices always come from the catalog, never from the server copy.
+- **Tests**: 22 new unit tests (38 total), plus browser checks of the product →
+  bag flow and the full sign-in → merge → reload → sign-out flow against a
+  mocked Supabase.
+
+### Layout fixes to Phase 1
+
+- **RTL double mirroring:** rows are mirrored by hand, but on the web
+  `<html dir="rtl">` mirrored them again, and Android does the same on phones
+  set to Arabic. The layout engine now stays LTR everywhere: web `dir` is
+  `ltr`, and `app.json` sets expo-localization `supportsRTL: false`. Arabic
+  screens now read right-to-left correctly.
+- **Floating header:** `AppHeader` (menu, search, bag) was never mounted, so
+  the drawer could not be opened. The tab layout now renders it.
+- **Drawer:** the closed drawer was half visible in Arabic. It is now anchored
+  to the correct edge.
+- **Arrows:** the back chevron and the hero previous/next arrows now point the
+  right way in both languages.
+
+---
+
 ## Phase plan
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| 1 | Tokens, RTL, navigation, chrome, hero, opening, measured 3D comparison | **Complete — awaiting approval** |
-| 2 | Supabase schema/RLS/auth, catalog ingestion, product detail, cart server sync | Next |
-| 3 | Checkout, Paymob, shipping, orders, notifications | Planned |
+| 1 | Tokens, RTL, navigation, chrome, hero, opening, measured 3D comparison | Complete |
+| 2 | Supabase schema/RLS, catalog ingestion, product detail | **Complete. Needs your Supabase project and catalog** |
+| 2b | Supabase Auth (email + password) and wishlist/bag server sync | **Complete. Needs "Confirm email" switched off** |
+| 3 | Checkout, Paymob, shipping, orders, notifications | Next. Needs Paymob and courier accounts |
 | 4 | Admin, inventory, release hardening, store submission | Planned |
-
-Phase 2 starts only after Phase 1 approval.

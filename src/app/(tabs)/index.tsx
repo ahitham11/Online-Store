@@ -1,119 +1,116 @@
-import { router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useCallback, useMemo, useRef, useState, type ComponentRef } from 'react';
+import { Image } from "expo-image";
+import { router, useLocalSearchParams } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentRef,
+} from "react";
+import {
+  Pressable,
   ScrollView,
   StyleSheet,
   View,
   useWindowDimensions,
   type LayoutChangeEvent,
-} from 'react-native';
-import Animated, {
-  useAnimatedScrollHandler,
-} from 'react-native-reanimated';
-import { Footer } from '@/components/chrome/Footer';
-import { GrainOverlay } from '@/components/chrome/GrainOverlay';
-import { useHeaderScroll } from '@/components/chrome/HeaderScrollContext';
-import { HeroSlider, type VelvetSlide } from '@/components/home/HeroSlider';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { Ornament } from '@/components/ui/Ornament';
-import { Reveal } from '@/components/motion/Reveal';
-import { SectionHeader } from '@/components/ui/SectionHeader';
-import { SkeletonBlock } from '@/components/ui/Skeleton';
-import { AppText } from '@/components/ui/AppText';
-import { Button } from '@/components/ui/Button';
-import { GoldRule } from '@/components/ui/GoldRule';
-import { Icon } from '@/components/ui/Icon';
-import { useBottomInset } from '@/hooks/useBottomInset';
-import { useCatalog } from '@/data/useCatalog';
-import { useI18n } from '@/lib/i18n';
-import { useTheme } from '@/lib/theme';
-import {
-  layout,
-  palette,
-  radii,
-  spacing,
-  typeScale,
-} from '@/theme/tokens';
+} from "react-native";
+import Animated, { useAnimatedScrollHandler } from "react-native-reanimated";
 
-type Anchor = 'principles' | 'categories' | 'new' | 'offers' | 'atelier';
+import { Monogram } from "@/components/brand/BrandMark";
+import { Footer } from "@/components/chrome/Footer";
+import { useHeaderScroll } from "@/components/chrome/HeaderScrollContext";
+import { HeroSlider, type VelvetSlide } from "@/components/home/HeroSlider";
+import { AmbientVideo } from "@/components/media/AmbientVideo";
+import { ProductCard } from "@/components/product/ProductCard";
+import { AppText } from "@/components/ui/AppText";
+import { CardGrid, useCardWidth } from "@/components/ui/CardGrid";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Button } from "@/components/ui/Button";
+import { Icon, type IconName } from "@/components/ui/Icon";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SkeletonBlock } from "@/components/ui/Skeleton";
+import { ambientClips } from "@/data/media";
+import { useCatalog } from "@/data/useCatalog";
+import { useBottomInset } from "@/hooks/useBottomInset";
+import { useMarket } from "@/hooks/useMarket";
+import { formatPrice } from "@/lib/format";
+import { useI18n, type TranslationKey } from "@/lib/i18n";
+import { useTheme } from "@/lib/theme";
+import { fromPrice } from "@/lib/variants";
+import { layout, radii, spacing } from "@/theme/tokens";
+
+type Anchor = "categories" | "new";
+
+const services: { icon: IconName; title: TranslationKey; body: TranslationKey }[] = [
+  { icon: "box", title: "home.serviceCodTitle", body: "home.serviceCodBody" },
+  { icon: "truck", title: "home.serviceShipTitle", body: "home.serviceShipBody" },
+  { icon: "whatsapp", title: "home.serviceHelpTitle", body: "home.serviceHelpBody" },
+];
 
 export default function HomeScreen() {
   const { width, height } = useWindowDimensions();
   const { colors, isDark } = useTheme();
-  const { t, localized, isRTL } = useI18n();
+  const { t, localized, isRTL, language } = useI18n();
   const bottomInset = useBottomInset(spacing.xl);
   const catalog = useCatalog();
+  const market = useMarket();
   const scrollY = useHeaderScroll();
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const anchors = useRef<Partial<Record<Anchor, number>>>({});
   const [slideIndex, setSlideIndex] = useState(0);
 
-  const heroHeight = Math.min(Math.max(height * 0.84, 548), 760);
+  const heroHeight = Math.min(Math.max(height * 0.72, 520), 700);
   const gutter = width > 760 ? (width - 720) / 2 : spacing.xl;
+  const cardWidth = useCardWidth(gutter);
+  const contentWidth = width - gutter * 2;
+  const tileWidth = Math.floor((contentWidth - spacing.md * 2) / 3);
+
+  const { products, categories, heroSlides } = catalog.data;
 
   const slides = useMemo<VelvetSlide[]>(() => {
-    if (catalog.data.heroSlides.length > 0) {
-      return catalog.data.heroSlides.map((slide) => ({
+    const priceOf = (productId: string | null) => {
+      const product = products.find((p) => p.id === productId);
+      const price = product ? fromPrice(product, market.code) : null;
+      return price === null ? "" : formatPrice(price, market.code, language);
+    };
+    if (heroSlides.length > 0) {
+      return heroSlides.map((slide) => ({
         id: slide.id,
         imageUri: slide.image,
+        anchor: slide.productId ? `product:${slide.productId}` : "new",
         copy: {
-          eyebrow:
-            localized(slide.eyebrowAr, slide.eyebrowEn) || t('home.heroEyebrow'),
+          eyebrow: localized(slide.eyebrowAr, slide.eyebrowEn),
           title: localized(slide.titleAr, slide.titleEn),
-          body: localized(slide.bodyAr, slide.bodyEn) || t('home.heroBody'),
-          hint: t('home.heroHint'),
-          statusLabel: t('home.heroStatus'),
-          statusValue: t('product.inStock'),
-          ctaLabel: t('common.viewAll'),
+          body: localized(slide.bodyAr, slide.bodyEn),
+          hint: t("home.heroHint"),
+          statusLabel: t("home.heroFrom"),
+          statusValue: priceOf(slide.productId),
+          ctaLabel: t("home.heroCta"),
         },
       }));
     }
-
+    // Shown only for a moment while the catalog loads.
     return [
       {
-        id: 'house-1',
-        anchor: 'principles',
+        id: "welcome",
+        anchor: "new",
         copy: {
-          eyebrow: t('home.heroEyebrow'),
-          title: t('home.heroTitle'),
-          body: t('home.heroBody'),
-          hint: t('home.heroHint'),
-          statusLabel: t('home.heroStatus'),
-          statusValue: t('home.heroStatusPending'),
-          ctaLabel: t('home.heroCta'),
-        },
-      },
-      {
-        id: 'house-2',
-        anchor: 'principles',
-        copy: {
-          eyebrow: t('home.chapterEyebrow'),
-          title: t('home.chapterTitle'),
-          body: t('home.chapterBody'),
-          hint: t('home.heroHint'),
-          statusLabel: t('home.principleLabel'),
-          statusValue: t('home.principleCatalogValue'),
-          ctaLabel: t('home.readNote'),
-        },
-      },
-      {
-        id: 'house-3',
-        anchor: 'categories',
-        copy: {
-          eyebrow: t('home.atelierEyebrow'),
-          title: t('home.atelierTitle'),
-          body: t('home.atelierBody'),
-          hint: t('home.dragHint'),
-          statusLabel: t('home.principleLabel'),
-          statusValue: t('home.manifestoLine'),
-          ctaLabel: t('home.categoriesCta'),
+          eyebrow: t("home.heroEyebrow"),
+          title: t("home.heroTitle"),
+          body: t("home.heroBody"),
+          hint: t("home.heroHint"),
+          statusLabel: t("home.heroDelivery"),
+          statusValue: t("home.heroCountries"),
+          ctaLabel: t("home.heroCta"),
         },
       },
     ];
-  }, [catalog.data.heroSlides, localized, t]);
+  }, [heroSlides, products, market.code, language, localized, t]);
 
-  const activeSlide = slides.length === 0 ? 0 : Math.min(slideIndex, slides.length - 1);
+  const activeSlide = Math.min(slideIndex, Math.max(slides.length - 1, 0));
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -129,38 +126,44 @@ export default function HomeScreen() {
 
   const scrollToAnchor = useCallback((anchor?: string) => {
     if (!anchor) return;
-    const y = anchors.current[anchor as Anchor];
-    if (typeof y !== 'number') return;
+    if (anchor.startsWith("product:")) {
+      router.push(`/product/${anchor.slice("product:".length)}`);
+      return;
+    }
+    // Old links (?section=offers) land on the products.
+    const y = anchors.current[(anchor === "offers" ? "new" : anchor) as Anchor];
+    if (typeof y !== "number") return;
     scrollRef.current?.scrollTo({ y: Math.max(0, y - 72), animated: true });
   }, []);
 
-  const principles = [
-    {
-      number: '01',
-      label: t('home.principleCatalog'),
-      value: t('home.principleCatalogValue'),
-    },
-    {
-      number: '02',
-      label: t('home.principlePrice'),
-      value: t('home.principlePriceValue'),
-    },
-    {
-      number: '03',
-      label: t('home.principleStock'),
-      value: t('home.principleStockValue'),
-    },
-  ];
+  // Links such as the drawer's "Offers" open home at a section: /?section=new
+  const { section } = useLocalSearchParams<{ section?: string }>();
+  useEffect(() => {
+    if (!section) return;
+    const timer = setTimeout(() => {
+      scrollToAnchor(section);
+      router.setParams({ section: undefined });
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [scrollToAnchor, section]);
+
+  const topCategories = categories
+    .filter((category) => category.parentId === null)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .slice(0, 3);
+  const countFor = (categoryId: string) => products.filter((p) => p.categoryId === categoryId).length;
+  const loading = catalog.isLoading && products.length === 0;
 
   return (
     <View style={[styles.root, { backgroundColor: colors.bg }]}>
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <Animated.ScrollView
         ref={scrollRef}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: bottomInset }}>
+        contentContainerStyle={{ paddingBottom: bottomInset }}
+      >
         <View style={{ height: heroHeight }}>
           <HeroSlider
             width={width}
@@ -172,226 +175,123 @@ export default function HomeScreen() {
           />
         </View>
 
-        {catalog.isError ? (
+        {catalog.isError && products.length === 0 ? (
           <View style={[styles.section, { paddingHorizontal: gutter }]}>
             <EmptyState
-              eyebrow={t('common.errorTitle')}
-              title={t('common.errorBody')}
-              actionLabel={t('common.retry')}
+              eyebrow={t("common.errorTitle")}
+              title={t("common.errorBody")}
+              actionLabel={t("common.retry")}
               onAction={() => catalog.refetch()}
             />
           </View>
         ) : null}
 
-        <Reveal delay={40}>
-          <View
-            onLayout={captureAnchor('principles')}
-            style={[styles.section, { paddingHorizontal: gutter }]}>
-            <SectionHeader
-              eyebrow={t('home.chapterEyebrow')}
-              title={t('home.chapterTitle')}
-            />
-            <AppText
-              variant="body"
-              tone="secondary"
-              style={[styles.sectionBody, { paddingHorizontal: 4 }]}
-              maxScale={1.3}>
-              {t('home.chapterBody')}
-            </AppText>
-
-            <View
-              style={[
-                styles.principlePanel,
-                { borderColor: colors.goldLine, backgroundColor: colors.surface },
-              ]}>
-              {principles.map((principle, index) => (
-                <View key={principle.number}>
-                  <View
-                    style={[
-                      styles.principleRow,
-                      { flexDirection: isRTL ? 'row-reverse' : 'row' },
-                    ]}>
-                    <AppText variant="label" tone="accent" style={styles.principleNumber} maxScale={1.2}>
-                      {principle.number}
-                    </AppText>
-                    <View style={styles.principleCopy}>
-                      <AppText variant="caption" tone="tertiary" maxScale={1.2}>
-                        {principle.label}
-                      </AppText>
-                      <AppText variant="subtitle" style={styles.principleValue} maxScale={1.25}>
-                        {principle.value}
-                      </AppText>
-                    </View>
-                    <Icon name="check" size={15} color={colors.accentText} />
-                  </View>
-                  {index < principles.length - 1 ? (
-                    <View style={[styles.hairline, { backgroundColor: colors.border }]} />
-                  ) : null}
-                </View>
-              ))}
-            </View>
-          </View>
-        </Reveal>
-
-        <View
-          onLayout={captureAnchor('categories')}
-          style={[styles.section, { paddingHorizontal: gutter }]}>
+        {/* Categories: three equal tiles */}
+        <View onLayout={captureAnchor("categories")} style={[styles.section, { paddingHorizontal: gutter }]}>
           <SectionHeader
-            eyebrow={t('home.categoriesEyebrow')}
-            title={t('home.categoriesTitle')}
-            actionLabel={t('common.viewAll')}
-            onAction={() => router.push('/categories')}
+            eyebrow={t("home.categoriesEyebrow")}
+            title={t("home.categoriesTitle")}
+            actionLabel={t("common.viewAll")}
+            onAction={() => router.push("/categories")}
           />
-          <View style={styles.sectionBlock}>
-            <EmptyState
-              compact
-              title={t('home.categoriesEmptyTitle')}
-              body={t('home.categoriesEmptyBody')}
-              actionLabel={t('home.categoriesCta')}
-              onAction={() => router.push('/categories')}
+          <View style={[styles.row, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
+            {loading
+              ? [0, 1, 2].map((i) => <SkeletonBlock key={i} width={tileWidth} height={tileWidth + 52} radius={radii.lg} />)
+              : topCategories.map((category) => {
+                  const name = localized(category.nameAr, category.nameEn);
+                  const count = countFor(category.id);
+                  return (
+                    <Pressable
+                      key={category.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${name}, ${t("categories.productCount", { count })}`}
+                      onPress={() => router.push(`/category/${category.id}`)}
+                      style={({ pressed }) => [
+                        styles.categoryTile,
+                        { width: tileWidth, borderColor: colors.goldLine, backgroundColor: colors.surface, opacity: pressed ? 0.85 : 1 },
+                      ]}
+                    >
+                      <View style={[styles.categoryImage, { backgroundColor: colors.bgAlt }]}>
+                        {category.image ? (
+                          <Image source={{ uri: category.image }} style={StyleSheet.absoluteFill} contentFit="cover" transition={250} accessibilityIgnoresInvertColors />
+                        ) : (
+                          <Monogram size={28} color={colors.textTertiary} gold={colors.goldLine} />
+                        )}
+                      </View>
+                      <View style={styles.categoryCopy}>
+                        <AppText variant="subtitle" align="center" numberOfLines={2} style={styles.categoryName} maxScale={1.2}>
+                          {name}
+                        </AppText>
+                        <AppText variant="caption" tone="tertiary" align="center" numberOfLines={1} maxScale={1.2}>
+                          {t("categories.productCount", { count })}
+                        </AppText>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+          </View>
+        </View>
+
+        {/* Products: same-size cards */}
+        <View onLayout={captureAnchor("new")} style={[styles.section, { paddingHorizontal: gutter }]}>
+          <SectionHeader
+            eyebrow={t("home.newEyebrow")}
+            title={t("home.newTitle")}
+            actionLabel={t("common.viewAll")}
+            onAction={() => router.push("/categories")}
+          />
+          <View style={styles.block}>
+            <CardGrid>
+              {loading
+                ? [0, 1, 2, 3].map((i) => <SkeletonBlock key={i} width={cardWidth} height={cardWidth * 1.09 + 128} radius={radii.lg} />)
+                : products.map((product) => <ProductCard key={product.id} product={product} width={cardWidth} />)}
+            </CardGrid>
+          </View>
+        </View>
+
+        {/* Brand band: a faint clip moving behind the words, like the hero */}
+        <View style={[styles.band, { marginTop: spacing["3xl"] }]}>
+          <AmbientVideo clip={ambientClips.redLip} strength={isDark ? 0.2 : 0.3} />
+          <View style={[styles.bandCopy, { paddingHorizontal: gutter }]}>
+            <AppText variant="label" tone="accent" align="center" style={styles.bandEyebrow} maxScale={1.2}>
+              {t("home.bandEyebrow")}
+            </AppText>
+            <AppText variant="displaySmall" align="center" style={styles.bandTitle} maxScale={1.15}>
+              {t("home.bandTitle")}
+            </AppText>
+            <AppText variant="body" tone="secondary" align="center" style={styles.bandBody} maxScale={1.3}>
+              {t("home.bandBody")}
+            </AppText>
+            <Button
+              label={t("home.heroCta")}
+              fullWidth={false}
+              icon="arrow"
+              iconPosition="end"
+              onPress={() => router.push("/categories")}
             />
           </View>
         </View>
 
-        <View
-          onLayout={captureAnchor('new')}
-          style={[styles.section, { paddingHorizontal: gutter }]}>
-          <SectionHeader
-            eyebrow={t('home.newEyebrow')}
-            title={t('home.newTitle')}
-            actionLabel={t('common.all')}
-            onAction={() => router.push('/categories')}
-          />
-          <View style={styles.sectionBlock}>
-            <View
-              style={[
-                styles.editorialEmpty,
-                { borderColor: colors.goldLine, backgroundColor: colors.bgAlt },
-              ]}>
-              <View style={[styles.editorialIndex, { borderColor: colors.goldLine }]}>
-                <AppText variant="displaySmall" tone="accent" font="display" style={styles.indexText} maxScale={1.2}>
-                  01
+        {/* Service promises: three equal tiles over a second faint clip */}
+        <View style={[styles.section, styles.serviceSection, { paddingHorizontal: gutter }]}>
+          <AmbientVideo clip={ambientClips.berry} strength={isDark ? 0.1 : 0.14} />
+          <SectionHeader eyebrow={t("home.serviceEyebrow")} title={t("home.serviceTitle")} />
+          <View style={[styles.row, { flexDirection: isRTL ? "row-reverse" : "row" }]}>
+            {services.map((service) => (
+              <View key={service.title} style={[styles.serviceTile, { width: tileWidth, borderColor: colors.goldLine, backgroundColor: colors.surface }]}>
+                <View style={[styles.serviceIcon, { backgroundColor: colors.bgAlt }]}>
+                  <Icon name={service.icon} size={18} color={colors.primary} />
+                </View>
+                <AppText variant="bodySmall" align="center" numberOfLines={2} style={styles.serviceTitle} maxScale={1.2}>
+                  {t(service.title)}
+                </AppText>
+                <AppText variant="caption" tone="tertiary" align="center" numberOfLines={3} maxScale={1.2}>
+                  {t(service.body)}
                 </AppText>
               </View>
-              <AppText variant="titleSmall" align="center" style={styles.editorialTitle} maxScale={1.25}>
-                {t('home.newEmptyTitle')}
-              </AppText>
-              <AppText variant="bodySmall" tone="secondary" align="center" style={styles.editorialBody} maxScale={1.3}>
-                {t('home.newEmptyBody')}
-              </AppText>
-              <Button
-                label={t('home.categoriesCta')}
-                variant="ghost"
-                size="sm"
-                fullWidth={false}
-                icon="arrow"
-                iconPosition="end"
-                onPress={() => router.push('/categories')}
-              />
-            </View>
+            ))}
           </View>
         </View>
-
-        <View
-          onLayout={captureAnchor('offers')}
-          style={[styles.section, { paddingHorizontal: 0 }]}>
-          <View style={styles.offersPanel}>
-            <GrainOverlay opacity={0.06} />
-            <View style={{ paddingHorizontal: gutter }}>
-              <AppText variant="label" tone="accent" style={styles.darkEyebrow} maxScale={1.3}>
-                {t('home.offersEyebrow')}
-              </AppText>
-              <AppText variant="displaySmall" tone="onVeil" style={styles.offersTitle} maxScale={1.2}>
-                {t('home.offersTitle')}
-              </AppText>
-              <GoldRule width="26%" color="rgba(201,165,122,0.5)" style={styles.offersRule} />
-              <AppText variant="body" tone="onVeilMuted" style={styles.offersBody} maxScale={1.3}>
-                {t('home.offersEmptyBody')}
-              </AppText>
-              <View style={styles.noCountdown}>
-                <View style={[styles.countdownCell, { borderColor: 'rgba(201,165,122,0.34)' }]}>
-                  <AppText variant="displaySmall" tone="onVeil" style={styles.countdownValue} maxScale={1.1}>
-                    —
-                  </AppText>
-                  <AppText variant="caption" tone="onVeilMuted" style={styles.countdownLabel} maxScale={1.1}>
-                    {t('common.comingSoon')}
-                  </AppText>
-                </View>
-                <Icon name="sparkle" size={20} color={palette.champagne} />
-                <View style={[styles.countdownCell, { borderColor: 'rgba(201,165,122,0.34)' }]}>
-                  <AppText variant="displaySmall" tone="onVeil" style={styles.countdownValue} maxScale={1.1}>
-                    —
-                  </AppText>
-                  <AppText variant="caption" tone="onVeilMuted" style={styles.countdownLabel} maxScale={1.1}>
-                    {t('common.comingSoon')}
-                  </AppText>
-                </View>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        <Reveal delay={30}>
-          <View
-            onLayout={captureAnchor('atelier')}
-            style={[styles.section, { paddingHorizontal: gutter }]}>
-            <View
-              style={[
-                styles.atelierPanel,
-                { borderColor: colors.goldLine, backgroundColor: colors.surface },
-              ]}>
-              <GrainOverlay opacity={0.045} />
-              <View style={styles.atelierOrnament}>
-                <Ornament size={96} />
-              </View>
-              <AppText variant="label" tone="accent" align="center" style={styles.atelierEyebrow} maxScale={1.3}>
-                {t('home.atelierEyebrow')}
-              </AppText>
-              <AppText variant="title" align="center" style={styles.atelierTitle} maxScale={1.2}>
-                {t('home.atelierTitle')}
-              </AppText>
-              <AppText variant="bodySmall" tone="secondary" align="center" style={styles.atelierBody} maxScale={1.3}>
-                {t('home.atelierBody')}
-              </AppText>
-              <GoldRule width="30%" style={styles.atelierRule} />
-              <AppText variant="displaySmall" tone="primary" align="center" style={styles.manifesto} maxScale={1.15}>
-                {t('home.manifestoLine')}
-              </AppText>
-            </View>
-          </View>
-        </Reveal>
-
-        <View
-          style={[
-            styles.notify,
-            {
-              marginHorizontal: gutter,
-              borderColor: colors.goldLine,
-              backgroundColor: isDark ? colors.surface : palette.pearlDeep,
-            },
-          ]}>
-          <AppText variant="titleSmall" align="center" style={styles.notifyTitle} maxScale={1.2}>
-            {t('home.notifyTitle')}
-          </AppText>
-          <AppText variant="bodySmall" tone="secondary" align="center" style={styles.notifyBody} maxScale={1.3}>
-            {t('home.notifyBody')}
-          </AppText>
-          <Button
-            label={t('home.categoriesCta')}
-            variant="outline"
-            size="sm"
-            fullWidth={false}
-            icon="arrow"
-            iconPosition="end"
-            onPress={() => router.push('/categories')}
-          />
-        </View>
-
-        {catalog.isLoading ? (
-          <View style={[styles.section, { paddingHorizontal: gutter }]}>
-            <SkeletonBlock height={120} radius={radii.lg} />
-          </View>
-        ) : null}
 
         <View style={styles.footerGap} />
         <Footer />
@@ -401,168 +301,47 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
-  section: {
-    paddingTop: spacing['4xl'],
-  },
-  sectionBody: {
-    marginTop: spacing.md,
-    maxWidth: 520,
-  },
-  sectionBlock: {
-    marginTop: spacing.lg,
-  },
-  principlePanel: {
-    marginTop: spacing.xl,
-    borderRadius: radii.xl,
+  root: { flex: 1 },
+  section: { paddingTop: spacing["3xl"] },
+  block: { marginTop: spacing.lg },
+  row: { marginTop: spacing.lg, gap: spacing.md, alignItems: "stretch" },
+  categoryTile: {
+    borderRadius: radii.lg,
     borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: spacing.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
-  principleRow: {
-    alignItems: 'center',
-    gap: spacing.md,
+  categoryImage: {
+    width: "100%",
+    aspectRatio: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  categoryCopy: { paddingVertical: spacing.sm, paddingHorizontal: spacing.xs, gap: 2 },
+  // Room for two lines on every tile keeps the three tiles the same height.
+  categoryName: { fontSize: 14, lineHeight: 20, height: 40, textAlignVertical: "center" },
+  serviceTile: {
+    borderRadius: radii.lg,
+    borderWidth: StyleSheet.hairlineWidth,
     paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.sm,
+    alignItems: "center",
+    gap: spacing.xs,
   },
-  principleNumber: {
-    width: 26,
-    fontSize: 9,
-    letterSpacing: 1.4,
+  serviceIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.xs,
   },
-  principleCopy: {
-    flex: 1,
-    gap: 3,
-  },
-  principleValue: {
-    fontSize: 16,
-    lineHeight: 23,
-  },
-  hairline: {
-    height: StyleSheet.hairlineWidth,
-    marginStart: 38,
-  },
-  editorialEmpty: {
-    borderRadius: radii['2xl'],
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing['2xl'],
-    alignItems: 'center',
-    gap: spacing.sm,
-    overflow: 'hidden',
-  },
-  editorialIndex: {
-    width: 52,
-    height: 52,
-    borderRadius: 999,
-    borderWidth: StyleSheet.hairlineWidth,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
-  },
-  indexText: {
-    fontSize: 18,
-    lineHeight: 24,
-  },
-  editorialTitle: {
-    maxWidth: 280,
-  },
-  editorialBody: {
-    maxWidth: 300,
-  },
-  offersPanel: {
-    backgroundColor: palette.aubergineDeep,
-    paddingTop: spacing['3xl'],
-    paddingBottom: spacing['3xl'],
-    overflow: 'hidden',
-  },
-  darkEyebrow: {
-    letterSpacing: 2,
-  },
-  offersTitle: {
-    marginTop: spacing.md,
-    maxWidth: 420,
-    lineHeight: 44,
-  },
-  offersRule: {
-    marginVertical: spacing.lg,
-  },
-  offersBody: {
-    maxWidth: 420,
-  },
-  noCountdown: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.lg,
-    marginTop: spacing.xl,
-  },
-  countdownCell: {
-    width: 78,
-    height: 64,
-    borderRadius: radii.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 2,
-  },
-  countdownValue: {
-    fontSize: 22,
-    lineHeight: 26,
-    opacity: 0.7,
-  },
-  countdownLabel: {
-    fontSize: 8,
-    letterSpacing: 1,
-  },
-  atelierPanel: {
-    borderRadius: radii['2xl'],
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing['2xl'],
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  atelierOrnament: {
-    marginBottom: spacing.sm,
-    opacity: 0.9,
-  },
-  atelierEyebrow: {
-    letterSpacing: 2,
-  },
-  atelierTitle: {
-    marginTop: spacing.sm,
-    maxWidth: 320,
-    fontSize: typeScale.title.fontSize,
-  },
-  atelierBody: {
-    marginTop: spacing.md,
-    maxWidth: 330,
-  },
-  atelierRule: {
-    marginVertical: spacing.lg,
-  },
-  manifesto: {
-    fontSize: 30,
-    lineHeight: 42,
-  },
-  notify: {
-    marginTop: spacing['4xl'],
-    borderRadius: radii['2xl'],
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing['2xl'],
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  notifyTitle: {
-    maxWidth: 300,
-  },
-  notifyBody: {
-    maxWidth: 330,
-    marginBottom: spacing.md,
-  },
-  footerGap: {
-    height: spacing['4xl'] + layout.tabBarHeight,
-  },
+  serviceTitle: { fontSize: 13, lineHeight: 19 },
+  band: { minHeight: 420, justifyContent: "center", overflow: "hidden" },
+  bandCopy: { alignItems: "center", gap: spacing.md, paddingVertical: spacing["4xl"] },
+  bandEyebrow: { letterSpacing: 2 },
+  bandTitle: { maxWidth: 360 },
+  bandBody: { maxWidth: 340, marginBottom: spacing.sm },
+  serviceSection: { paddingBottom: spacing["2xl"], overflow: "hidden" },
+  footerGap: { height: spacing["3xl"] + layout.tabBarHeight },
 });

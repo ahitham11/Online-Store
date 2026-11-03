@@ -1,13 +1,12 @@
 {
   "expo": {
-    "name": "Velvety",
+    "name": "VEIVETY",
     "slug": "velvety-atelier",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "velvety",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.velvety.atelier"
@@ -15,33 +14,45 @@
     "android": {
       "package": "com.velvety.atelier",
       "adaptiveIcon": {
-        "backgroundColor": "#160A13",
+        "backgroundColor": "#FFFBFA",
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "monochromeImage": "./assets/images/adaptive-icon.png"
       },
-      "predictiveBackGestureEnabled": false,
-      "edgeToEdgeEnabled": true
+      "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "single",
       "favicon": "./assets/images/favicon.png",
-      "name": "Velvety",
-      "shortName": "Velvety",
-      "themeColor": "#160A13",
-      "backgroundColor": "#160A13"
+      "name": "VEIVETY",
+      "shortName": "VEIVETY",
+      "themeColor": "#FFFBFA",
+      "backgroundColor": "#FFFBFA"
     },
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "asyncRoutes": false
+        }
+      ],
       "expo-font",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#160A13",
+          "backgroundColor": "#FFFBFA",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 220,
+          "imageWidth": 240,
           "resizeMode": "contain"
         }
-      ]
+      ],
+      [
+        "expo-localization",
+        {
+          "supportsRTL": false,
+          "forcesRTL": false
+        }
+      ],
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,

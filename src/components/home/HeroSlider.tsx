@@ -14,7 +14,7 @@ import { Icon } from '@/components/ui/Icon';
 import { hapticSelection, hapticTap } from '@/lib/haptics';
 import { useI18n } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
-import { motion, palette, spacing } from '@/theme/tokens';
+import { motion, spacing } from '@/theme/tokens';
 
 export type VelvetSlide = {
   id: string;
@@ -79,7 +79,7 @@ export function HeroSlider({ width, height, slides, index, onChange, onCta }: Pr
 
   return (
     <View style={[styles.wrap, { width, height }]}>
-      <GestureDetector gesture={pan}>
+      <GestureDetector gesture={pan} touchAction="pan-y">
         <Animated.View
           key={slide.id}
           entering={FadeIn.duration(600)}
@@ -109,7 +109,7 @@ export function HeroSlider({ width, height, slides, index, onChange, onCta }: Pr
             {String(index + 1).padStart(2, '0')}
           </AppText>
           <View style={[styles.countRule, { backgroundColor: colors.goldLine }]} />
-          <AppText variant="caption" tone="onVeilMuted" style={styles.countTotal} maxScale={1.1}>
+          <AppText variant="caption" tone="stageMuted" style={styles.countTotal} maxScale={1.1}>
             {String(slides.length).padStart(2, '0')}
           </AppText>
         </View>
@@ -128,25 +128,26 @@ export function HeroSlider({ width, height, slides, index, onChange, onCta }: Pr
           <View style={styles.arrows}>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={t('home.heroPrev')}
+              accessibilityLabel={isRTL ? t('home.heroNext') : t('home.heroPrev')}
               onPress={() => go(isRTL ? 1 : -1)}
               hitSlop={8}
               style={({ pressed }) => [styles.arrow, { opacity: pressed ? 0.55 : 1 }]}>
-              <Icon name="chevron" size={14} color={palette.champagneLight} mirrored />
+              {/* Physical left arrow in both languages. */}
+              <Icon name="chevron" size={14} color={colors.stageText} flip={!isRTL} />
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={t('home.heroNext')}
+              accessibilityLabel={isRTL ? t('home.heroPrev') : t('home.heroNext')}
               onPress={() => go(isRTL ? -1 : 1)}
               hitSlop={8}
               style={({ pressed }) => [styles.arrow, { opacity: pressed ? 0.55 : 1 }]}>
-              <Icon name="chevron" size={14} color={palette.champagneLight} />
+              <Icon name="chevron" size={14} color={colors.stageText} flip={isRTL} />
             </Pressable>
           </View>
         ) : (
           <View style={styles.scrollHint}>
             <View style={[styles.scrollLine, { backgroundColor: colors.goldLine }]} />
-            <AppText variant="caption" tone="onVeilMuted" style={styles.scrollText} maxScale={1.2}>
+            <AppText variant="caption" tone="stageMuted" style={styles.scrollText} maxScale={1.2}>
               {t('home.heroScroll')}
             </AppText>
           </View>
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 999,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(201,165,122,0.4)',
+    borderColor: 'rgba(201,154,134,0.4)',
     alignItems: 'center',
     justifyContent: 'center',
   },

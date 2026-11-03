@@ -76,17 +76,17 @@ function Fold({
       <LinearGradient
         colors={
           dark
-            ? ['#160A13', '#2B1026', '#160A13']
-            : ['#220E1E', '#3A1732', '#1B0C18']
+            ? ['#0E0A0B', '#1C1517', '#0E0A0B']
+            : ['#220E1E', '#2A1F22', '#171113']
         }
         locations={[0, 0.52, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0.1 }}
         style={StyleSheet.absoluteFill}
       />
-      <View style={[styles.seam, index === 0 ? null : { backgroundColor: 'rgba(201,165,122,0.18)' }]} />
+      <View style={[styles.seam, index === 0 ? null : { backgroundColor: 'rgba(201,154,134,0.18)' }]} />
       <LinearGradient
-        colors={['transparent', 'rgba(168,71,110,0.22)', 'transparent']}
+        colors={['transparent', 'rgba(178,58,82,0.22)', 'transparent']}
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
         style={styles.foldGlow}
@@ -255,8 +255,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 999,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(201,165,122,0.3)',
-    backgroundColor: 'rgba(251,246,241,0.05)',
+    borderColor: 'rgba(201,154,134,0.3)',
+    backgroundColor: 'rgba(255,251,250,0.05)',
   },
   skipText: {
     letterSpacing: 1.4,

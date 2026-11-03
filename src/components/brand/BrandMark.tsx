@@ -47,8 +47,9 @@ export function BrandMark({
   }
 
   const isArabic = language === 'ar';
-  const wordmark = isArabic ? brand.nameAr : brand.nameEn.toUpperCase();
-  const eyebrow = isArabic ? 'بيت الجمال' : brand.fullName.toLowerCase();
+  // The logo is Latin on every package, so it stays Latin in Arabic too.
+  const wordmark = brand.nameEn.toUpperCase();
+  const eyebrow = 'BEAUTY WITH';
 
   return (
     <View style={[styles.wrap, { alignItems }]}>
@@ -58,7 +59,7 @@ export function BrandMark({
           <AppText
             variant="label"
             tone={tone === 'gold' ? 'accent' : tone === 'light' ? 'onVeilMuted' : 'secondary'}
-            style={[styles.eyebrow, { fontSize: 8 * size, letterSpacing: isArabic ? 0 : 2.6 }]}
+            style={[styles.eyebrow, { fontSize: 8 * size, letterSpacing: 2.2, fontFamily: 'DMSans_600SemiBold' }]}
             maxScale={1.2}>
             {eyebrow}
           </AppText>
@@ -70,12 +71,13 @@ export function BrandMark({
           styles.wordmark,
           {
             color,
-            fontSize: (isArabic ? 27 : 25) * size,
-            lineHeight: (isArabic ? 36 : 28) * size,
-            letterSpacing: isArabic ? 0 : 6.4 * size,
+            fontSize: 30 * size,
+            lineHeight: 36 * size,
+            letterSpacing: 1.2 * size,
+            writingDirection: 'ltr',
           },
         ]}
-        font={isArabic ? 'display' : 'display'}
+        font="logo"
         maxScale={1.25}
         accessibilityLabel={wordmark}>
         {wordmark}
@@ -90,7 +92,7 @@ export function BrandMark({
               { color: muted, fontSize: 8.5 * size, letterSpacing: isArabic ? 0 : 2.4 },
             ]}
             maxScale={1.2}>
-            {isArabic ? 'مخمل • حرير • ضوء' : 'VELVET • SILK • LIGHT'}
+            {isArabic ? 'جمالك بلمسة مخملية' : 'BEAUTY WITH A VELVET TOUCH'}
           </AppText>
           <View style={[styles.rule, { backgroundColor: colors.goldLine }]} />
         </View>

@@ -8,6 +8,7 @@ type WishlistState = {
   toggle: (productId: string) => void;
   remove: (productId: string) => void;
   clear: () => void;
+  replaceAll: (productIds: string[]) => void;
 };
 
 export const useWishlistStore = create<WishlistState>()(
@@ -23,6 +24,7 @@ export const useWishlistStore = create<WishlistState>()(
       remove: (productId) =>
         set((state) => ({ productIds: state.productIds.filter((id) => id !== productId) })),
       clear: () => set({ productIds: [] }),
+      replaceAll: (productIds) => set({ productIds }),
     }),
     {
       name: 'velvety.wishlist.v1',

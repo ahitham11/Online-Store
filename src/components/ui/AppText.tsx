@@ -27,6 +27,8 @@ export type TextTone =
   | 'accent'
   | 'onVeil'
   | 'onVeilMuted'
+  | 'stage'
+  | 'stageMuted'
   | 'inverse'
   | 'danger'
   | 'success'
@@ -80,6 +82,8 @@ export function AppText({
       accent: colors.accentText,
       onVeil: colors.onVeil,
       onVeilMuted: colors.onVeilMuted,
+      stage: colors.stageText,
+      stageMuted: colors.stageTextMuted,
       inverse: colors.onPrimary,
       danger: colors.danger,
       success: colors.success,

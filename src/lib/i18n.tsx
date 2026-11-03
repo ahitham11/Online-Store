@@ -81,13 +81,18 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    // The app uses an explicit direction wrapper instead of forceRTL so the
-    // language can change without a native reload. Keep native RTL enabled for
-    // system components such as the keyboard and text selection.
-    I18nManager.allowRTL(true);
+    // Layout mirroring is done by hand: rows use `isRTL ? 'row-reverse' : 'row'`
+    // and AppText sets a physical textAlign. The layout engine must therefore
+    // stay left-to-right, or Arabic screens are mirrored twice. Native RTL is
+    // disabled in app.json (expo-localization `supportsRTL: false`) for phones
+    // whose system language is Arabic. Each Text still sets writingDirection.
+    if (Platform.OS !== 'web') {
+      I18nManager.allowRTL(false);
+      I18nManager.forceRTL(false);
+    }
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
       document.documentElement.lang = language;
-      document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+      document.documentElement.dir = 'ltr';
     }
   }, [language, isRTL]);
 

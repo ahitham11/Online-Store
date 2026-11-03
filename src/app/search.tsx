@@ -96,7 +96,8 @@ export default function SearchScreen() {
           <AppText variant="titleSmall" style={styles.topTitle} maxScale={1.25}>
             {t('search.title')}
           </AppText>
-          <View style={styles.closeButton} />
+          {/* Spacer that balances the close button so the title stays centred. */}
+          <View style={styles.spacer} />
         </View>
 
         <View style={[styles.searchWrap, { paddingHorizontal: spacing.xl }]}>
@@ -171,7 +172,7 @@ export default function SearchScreen() {
                   key={product.id}
                   product={product}
                   width={cardWidth}
-                  onPress={() => router.push(`/category/${product.categoryId}`)}
+                  onPress={() => router.push(`/product/${product.id}`)}
                 />
               ))}
             </View>
@@ -265,6 +266,10 @@ const styles = StyleSheet.create({
     borderWidth: hairline,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  spacer: {
+    width: 40,
+    height: 40,
   },
   topTitle: {
     flex: 1,
