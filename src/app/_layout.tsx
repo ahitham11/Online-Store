@@ -64,6 +64,9 @@ function RootNavigator() {
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
         />
         <Stack.Screen name="policies/[slug]" />
+        <Stack.Screen name="checkout" options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="orders/index" />
+        <Stack.Screen name="orders/[id]" />
         <Stack.Screen
           name="sign-in"
           options={{ presentation: 'modal', animation: 'slide_from_bottom' }}

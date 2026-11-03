@@ -113,11 +113,20 @@ export default function AccountScreen() {
               styles.groupBody,
               { borderColor: colors.goldLine, backgroundColor: colors.surface },
             ]}>
-            <StaticRow
-              icon="receipt"
-              title={t('account.guestOrdersTitle')}
-              body={t('account.guestOrdersBody')}
-            />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('orders.title')}
+              onPress={() => {
+                hapticTap();
+                router.push('/orders');
+              }}
+              style={({ pressed }) => ({ opacity: pressed ? 0.65 : 1 })}>
+              <StaticRow
+                icon="receipt"
+                title={signedIn ? t('orders.title') : t('account.guestOrdersTitle')}
+                body={signedIn ? t('orders.subtitle') : t('account.guestOrdersBody')}
+              />
+            </Pressable>
             <View style={[styles.rule, { backgroundColor: colors.border }]} />
             <StaticRow
               icon="pin"
