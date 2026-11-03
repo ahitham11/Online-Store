@@ -14,7 +14,7 @@ import { Icon } from '@/components/ui/Icon';
 import { hapticSelection, hapticTap } from '@/lib/haptics';
 import { useI18n } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
-import { motion, palette, spacing } from '@/theme/tokens';
+import { motion, spacing } from '@/theme/tokens';
 
 export type VelvetSlide = {
   id: string;
