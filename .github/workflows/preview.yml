@@ -89,7 +89,30 @@ jobs:
           set -o pipefail
           npx --yes eas-cli@latest build --platform android --profile preview --non-interactive --json > build.json 2> >(tee build.log >&2)
           cat build.json
+      - name: Print the Gradle error when the build fails
+        if: failure()
+        run: |
+          id=$(grep -Eo 'builds/[0-9a-f-]{36}' build.log | head -1 | cut -d/ -f2)
+          [ -n "$id" ] || exit 0
+          npx --yes eas-cli@latest build:view "$id" --json > view.json || exit 0
+          node -e '
+            const v = JSON.parse(require("fs").readFileSync("view.json", "utf8"));
+            for (const u of (v.logFiles || [])) console.log(u);
+          ' > urls.txt
+          : > all.log
+          while read -r u; do curl -fsSL "$u" >> all.log || true; done < urls.txt
+          node -e '
+            const lines = require("fs").readFileSync("all.log", "utf8").split("\n").map((l) => {
+              try { const j = JSON.parse(l); return j.msg ?? l; } catch { return l; }
+            });
+            const hits = lines.flatMap((l, i) => /FAILURE|What went wrong|^e: |error:|Error:|Killed|OutOfMemory|Daemon.*disappeared/i.test(l) ? [i] : []);
+            const keep = new Set();
+            for (const i of hits.slice(0, 40)) for (let k = Math.max(0, i - 3); k < Math.min(lines.length, i + 12); k++) keep.add(k);
+            console.log([...keep].sort((a, b) => a - b).map((i) => lines[i]).join("\n") || lines.slice(-120).join("\n"));
+          ' | tee gradle-error.txt
+          { echo "### Gradle error"; echo '```'; head -c 60000 gradle-error.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Show the build page
+        if: always()
         run: |
           echo "### Android APK" >> "$GITHUB_STEP_SUMMARY"
           node -e "const b=JSON.parse(require('fs').readFileSync('build.json','utf8'))[0]; console.log('- Download: ' + (b.artifacts && b.artifacts.buildUrl)); console.log('- Status: ' + b.status)" >> "$GITHUB_STEP_SUMMARY" || true
