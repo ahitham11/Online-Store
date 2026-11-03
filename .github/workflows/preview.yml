@@ -56,7 +56,7 @@ jobs:
       - name: Link the Expo project
         run: npx --yes eas-cli@latest init --non-interactive --force
       - name: Export web build
-        run: npx expo export --platform web
+        run: npx expo export --platform web --clear
       - name: Deploy to Expo Hosting
         run: |
           set -o pipefail

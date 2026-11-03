@@ -1,6 +1,6 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useMemo, useRef, useState, type ComponentRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentRef } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -133,6 +133,17 @@ export default function HomeScreen() {
     if (typeof y !== 'number') return;
     scrollRef.current?.scrollTo({ y: Math.max(0, y - 72), animated: true });
   }, []);
+
+  // Links such as the drawer's "Offers" open home at a section: /?section=offers
+  const { section } = useLocalSearchParams<{ section?: string }>();
+  useEffect(() => {
+    if (!section) return;
+    const timer = setTimeout(() => {
+      scrollToAnchor(section);
+      router.setParams({ section: undefined });
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [scrollToAnchor, section]);
 
   const principles = [
     {

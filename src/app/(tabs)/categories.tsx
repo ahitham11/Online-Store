@@ -40,13 +40,15 @@ export default function CategoriesScreen() {
     <Page
       eyebrow={t('categories.eyebrow')}
       title={t('categories.title')}
-      description={t('home.categoriesEmptyBody')}
+      description={catalog.data.categories.length === 0 ? t('home.categoriesEmptyBody') : undefined}
       headerAccessory={
-        <AppText variant="caption" tone="tertiary" style={styles.count} maxScale={1.2}>
-          {language === 'ar'
-            ? `${catalog.data.categories.length} قسم`
-            : t('categories.count', { count: catalog.data.categories.length })}
-        </AppText>
+        catalog.data.categories.length > 0 ? (
+          <AppText variant="caption" tone="tertiary" style={styles.count} maxScale={1.2}>
+            {language === 'ar'
+              ? `${catalog.data.categories.length} قسم`
+              : t('categories.count', { count: catalog.data.categories.length })}
+          </AppText>
+        ) : null
       }>
       <View
         style={[
