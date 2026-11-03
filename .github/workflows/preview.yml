@@ -58,7 +58,9 @@ jobs:
       - name: Export web build
         run: npx expo export --platform web
       - name: Deploy to Expo Hosting
-        run: npx --yes eas-cli@latest deploy --prod --non-interactive 2>&1 | tee deploy.log
+        run: |
+          set -o pipefail
+          npx --yes eas-cli@latest deploy --prod --non-interactive 2>&1 | tee deploy.log
       - name: Show the link
         run: |
           echo "### Velvety test link" >> "$GITHUB_STEP_SUMMARY"
@@ -82,9 +84,13 @@ jobs:
       - run: npm ci
       - name: Link the Expo project
         run: npx --yes eas-cli@latest init --non-interactive --force
-      - name: Start the APK build on Expo
-        run: npx --yes eas-cli@latest build --platform android --profile preview --non-interactive --no-wait 2>&1 | tee build.log
+      - name: Build the APK on Expo (about 15 minutes)
+        run: |
+          set -o pipefail
+          npx --yes eas-cli@latest build --platform android --profile preview --non-interactive --json > build.json 2> >(tee build.log >&2)
+          cat build.json
       - name: Show the build page
         run: |
-          echo "### Android APK build" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Android APK" >> "$GITHUB_STEP_SUMMARY"
+          node -e "const b=JSON.parse(require('fs').readFileSync('build.json','utf8'))[0]; console.log('- Download: ' + (b.artifacts && b.artifacts.buildUrl)); console.log('- Status: ' + b.status)" >> "$GITHUB_STEP_SUMMARY" || true
           grep -Eo 'https://expo\.dev/[^ ]+' build.log | sort -u | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY" || true
