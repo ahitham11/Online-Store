@@ -4,8 +4,8 @@
  *
  *   npm run catalog:sql            # writes supabase/seed/catalog.sql
  */
-import { readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { mkdirSync, readdirSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 
 import { catalogFileSchema } from '../src/data/catalogSchema.ts';
 
@@ -67,5 +67,28 @@ for (const b of c.banners) {
 }
 lines.push('commit;', '');
 writeFileSync(out, lines.join('\n'));
+
+// Phone browsers freeze when pasting the whole file, so also write small
+// parts (run them in order; each one is its own transaction).
+const PART_LIMIT = 9_000;
+const partsDir = join(dirname(out), 'parts');
+mkdirSync(partsDir, { recursive: true });
+for (const old of readdirSync(partsDir)) rmSync(join(partsDir, old));
+const body = lines.slice(2, -2);
+const parts: string[][] = [[]];
+let size = 0;
+for (const line of body) {
+  if (size + line.length > PART_LIMIT && parts[parts.length - 1].length) {
+    parts.push([]);
+    size = 0;
+  }
+  parts[parts.length - 1].push(line);
+  size += line.length;
+}
+parts.forEach((part, i) => {
+  const header = `-- Part ${i + 1} of ${parts.length}. Run the parts in order.`;
+  writeFileSync(join(partsDir, `catalog-${i + 1}.sql`), [header, 'begin;', ...part, 'commit;', ''].join('\n'));
+});
+console.log(`✔ also wrote ${parts.length} parts to ${partsDir}`);
 const variants = c.products.reduce((n, p) => n + p.variants.length, 0);
 console.log(`✔ wrote ${out}: ${c.categories.length} categories, ${c.products.length} products, ${variants} variants`);
