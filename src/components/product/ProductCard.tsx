@@ -129,19 +129,16 @@ export function ProductCard({ product, onPress, width }: Props) {
         </Pressable>
 
         <View style={styles.copy}>
-          {product.tags[0] ? (
-            <AppText variant="label" tone="accent" style={styles.tag} maxScale={1.2}>
-              {product.tags[0]}
-            </AppText>
-          ) : null}
-          <AppText variant="subtitle" style={styles.name} numberOfLines={2} maxScale={1.25}>
+          {/* Every line is always present (one line each) so all cards are the same height. */}
+          <AppText variant="label" tone="accent" style={styles.tag} numberOfLines={1} maxScale={1.2}>
+            {product.tags[0] ?? ' '}
+          </AppText>
+          <AppText variant="subtitle" style={styles.name} numberOfLines={1} maxScale={1.25}>
             {name}
           </AppText>
-          {shade || variant?.size ? (
-            <AppText variant="caption" tone="secondary" numberOfLines={1} maxScale={1.2}>
-              {[shade, variant?.size].filter(Boolean).join(' · ')}
-            </AppText>
-          ) : null}
+          <AppText variant="caption" tone="secondary" numberOfLines={1} maxScale={1.2}>
+            {[shade, variant?.size].filter(Boolean).join(' · ') || ' '}
+          </AppText>
 
           <View style={[styles.bottomRow, { borderTopColor: colors.border }]}>
             <View style={styles.priceBlock}>

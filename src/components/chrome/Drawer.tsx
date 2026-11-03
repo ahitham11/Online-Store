@@ -122,7 +122,7 @@ export function Drawer() {
 
   const mainRows: NavRow[] = [
     { key: 'browse', icon: 'grid', label: t('drawer.browse'), onPress: () => navigate('/categories') },
-    { key: 'offers', icon: 'tag', label: t('drawer.offers'), onPress: () => navigate('/?section=offers') },
+    { key: 'offers', icon: 'tag', label: t('drawer.offers'), onPress: () => navigate('/?section=new') },
     { key: 'orders', icon: 'receipt', label: t('drawer.orders'), onPress: () => navigate('/orders') },
     { key: 'wishlist', icon: 'heart', label: t('drawer.wishlist'), onPress: () => navigate('/wishlist') },
     { key: 'bag', icon: 'bag', label: t('drawer.bag'), onPress: () => navigate('/bag') },

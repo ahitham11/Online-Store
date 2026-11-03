@@ -33,7 +33,8 @@ function deviceMarket(): MarketCode {
 
 const initialState = {
   language: 'ar' as AppLanguage,
-  theme: 'system' as ThemePreference,
+  // White (light) is the store's main look; dark stays available in Account.
+  theme: 'light' as ThemePreference,
   hasSeenOpening: false,
   reduceMotionOverride: null as boolean | null,
   market: deviceMarket(),
@@ -55,7 +56,7 @@ export const usePreferencesStore = create<PreferencesState>()(
     {
       name: 'velvety.preferences.v1',
       storage,
-      version: 2,
+      version: 3,
       partialize: ({ language, theme, hasSeenOpening, reduceMotionOverride, market }) => ({
         market,
         language,
@@ -63,9 +64,11 @@ export const usePreferencesStore = create<PreferencesState>()(
         hasSeenOpening,
         reduceMotionOverride,
       }),
-      migrate: (persisted) => {
+      migrate: (persisted, version) => {
         const state = (persisted ?? {}) as Partial<PreferencesState>;
-        return { ...initialState, ...state, market: state.market ?? deviceMarket() } as PreferencesState;
+        // v3: light became the default; move shoppers still on "follow the phone" to light.
+        const theme = version < 3 && (state.theme === undefined || state.theme === 'system') ? 'light' : state.theme;
+        return { ...initialState, ...state, theme, market: state.market ?? deviceMarket() } as PreferencesState;
       },
     },
   ),

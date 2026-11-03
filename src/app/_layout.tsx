@@ -65,6 +65,7 @@ function RootNavigator() {
         />
         <Stack.Screen name="policies/[slug]" />
         <Stack.Screen name="checkout" options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="videos" />
         <Stack.Screen name="orders/index" />
         <Stack.Screen name="orders/[id]" />
         <Stack.Screen

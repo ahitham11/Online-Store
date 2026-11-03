@@ -79,7 +79,7 @@ export function HeroSlider({ width, height, slides, index, onChange, onCta }: Pr
 
   return (
     <View style={[styles.wrap, { width, height }]}>
-      <GestureDetector gesture={pan}>
+      <GestureDetector gesture={pan} touchAction="pan-y">
         <Animated.View
           key={slide.id}
           entering={FadeIn.duration(600)}

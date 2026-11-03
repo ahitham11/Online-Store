@@ -188,6 +188,7 @@ export function Hero3D({
               />
             ))}
           </View>
+          {imageUri ? null : (
           <View style={styles.arch}>
             <LinearGradient
               colors={['rgba(255,251,250,0.18)', 'rgba(178,58,82,0.16)', `rgba(${colors.stageScrim},0.5)`]}
@@ -197,8 +198,10 @@ export function Hero3D({
             />
             <View style={[styles.archInner, { borderColor: 'rgba(235,211,200,0.52)' }]} />
           </View>
+          )}
         </Animated.View>
 
+{imageUri ? null : (
         <Animated.View style={[styles.pearlOrbit, pearlStyle]}>
           <View style={styles.orbitRing} />
           <LinearGradient
@@ -211,6 +214,7 @@ export function Hero3D({
           <View style={styles.pearlHighlight} />
           <View style={styles.orbitDot} />
         </Animated.View>
+        )}
 
         <Animated.View
           pointerEvents="none"

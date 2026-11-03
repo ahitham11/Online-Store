@@ -73,8 +73,11 @@ const styles = StyleSheet.create({
   eyebrow: {
     letterSpacing: 1.6,
   },
+  // One line on phones: shorter, smaller section titles.
   title: {
     maxWidth: 320,
+    fontSize: 24,
+    lineHeight: 32,
   },
   action: {
     flexDirection: 'row',

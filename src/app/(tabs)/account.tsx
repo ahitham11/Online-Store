@@ -46,9 +46,9 @@ export default function AccountScreen() {
   const signedIn = status === 'signedIn';
 
   const themeOptions: { key: ThemePreference; label: TranslationKey; icon: IconName }[] = [
-    { key: 'system', label: 'account.themeSystem', icon: 'settings' },
     { key: 'light', label: 'account.themeLight', icon: 'sun' },
     { key: 'dark', label: 'account.themeDark', icon: 'moon' },
+    { key: 'system', label: 'account.themeSystem', icon: 'settings' },
   ];
 
   return (

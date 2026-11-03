@@ -25,7 +25,6 @@ function clip(id: string, titleAr: string, titleEn: string, kind: BrandVideo['ki
 }
 
 export const brandVideos: BrandVideo[] = [
-  clip('studio-clip', 'المجموعة الجديدة', 'New collection', 'product', 'lip-gloss'),
   clip('red-lip', 'إطلالة الأحمر الجريء', 'The bold red look', 'product', 'lip-gloss'),
   clip('crystal-clear', '13 كريستال كلير', '13 Crystal Clear', 'product', 'lip-gloss'),
   clip('gloss-swatches', 'تجربة درجات الجلوس', 'Gloss shades, tried on', 'product', 'lip-gloss'),
