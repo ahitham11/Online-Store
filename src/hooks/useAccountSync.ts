@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 
 import { useCatalog } from '@/data/useCatalog';
-import { createSyncClient, findVariantBySku, mergeBag, mergeWishlist } from '@/lib/accountSync';
+import { createSyncClient, findVariantBySku, mergeBag, mergeWishlist, repriceBag } from '@/lib/accountSync';
+import { usePreferencesStore } from '@/stores/preferences';
 import { readSupabaseConfig } from '@/lib/env';
 import { useBagStore } from '@/stores/bag';
 import { useSessionStore } from '@/stores/session';
@@ -29,6 +30,15 @@ export function useAccountSync() {
   const catalogRef = useRef(catalog);
   const catalogReady = catalog.status === 'ready';
   const mergedFor = useRef<string | null>(null);
+  const market = usePreferencesStore((state) => state.market);
+
+  // Keep bag prices in the shopper's market currency and drop shades not sold there.
+  useEffect(() => {
+    if (!catalogReady) return;
+    const { lines, replaceLines } = useBagStore.getState();
+    const next = repriceBag(lines, catalogRef.current, market);
+    if (next !== lines) replaceLines(next);
+  }, [catalogReady, catalog, market]);
 
   useEffect(() => {
     catalogRef.current = catalog;
@@ -79,7 +89,12 @@ export function useAccountSync() {
         if (!accessToken || cancelled) return;
         const remote = await sync.pull(accessToken);
         if (cancelled) return;
-        const bag = mergeBag(useBagStore.getState().lines, remote.bag, catalogRef.current);
+        const bag = mergeBag(
+          useBagStore.getState().lines,
+          remote.bag,
+          catalogRef.current,
+          usePreferencesStore.getState().market,
+        );
         const wishlist = mergeWishlist(useWishlistStore.getState().productIds, remote.wishlist, catalogRef.current);
         useBagStore.getState().replaceLines(bag);
         useWishlistStore.getState().replaceAll(wishlist);

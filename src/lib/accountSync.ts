@@ -1,7 +1,8 @@
 import type { CatalogSnapshot } from '../data/catalog.ts';
 import type { BagLine } from '../stores/bag.ts';
 import type { SupabaseConfig } from './env.ts';
-import { bagLineFor } from './variants.ts';
+import type { MarketCode } from './markets.ts';
+import { bagLineFor, priceFor } from './variants.ts';
 
 /**
  * Keeps a signed-in shopper's bag and wishlist in Supabase (`bag_items`,
@@ -39,7 +40,12 @@ export function mergeWishlist(local: string[], remote: string[], catalog: Catalo
  * Same SKU on both sides keeps the larger quantity (never adds them, so a
  * re-sync cannot double a bag). Prices are refreshed from the catalog.
  */
-export function mergeBag(local: BagLine[], remote: RemoteBagRow[], catalog: CatalogSnapshot): BagLine[] {
+export function mergeBag(
+  local: BagLine[],
+  remote: RemoteBagRow[],
+  catalog: CatalogSnapshot,
+  market: MarketCode = 'EG',
+): BagLine[] {
   const quantities = new Map<string, number>();
   const order: string[] = [];
   for (const row of [...local.map((line) => ({ sku: line.sku, quantity: line.quantity })), ...remote]) {
@@ -49,9 +55,9 @@ export function mergeBag(local: BagLine[], remote: RemoteBagRow[], catalog: Cata
   const lines: BagLine[] = [];
   for (const sku of order) {
     const match = findVariantBySku(catalog, sku);
-    if (!match) continue;
+    if (!match || priceFor(match.variant, market) === null) continue;
     const quantity = Math.min(Math.max(1, Math.floor(quantities.get(sku) ?? 1)), MAX_QUANTITY);
-    lines.push(bagLineFor(match.product, match.variant, quantity));
+    lines.push(bagLineFor(match.product, match.variant, quantity, market));
   }
   return lines;
 }
@@ -123,4 +129,28 @@ export function createSyncClient(config: SupabaseConfig, fetchImpl: FetchLike = 
       await request(`wishlist_items?user_id=eq.${userId}${keep}`, accessToken, { method: 'DELETE', prefer: 'return=minimal' });
     },
   };
+}
+
+/**
+ * Re-prices bag lines for a market from the catalog. Lines whose shade is not
+ * sold in that market are dropped. Returns the same array when nothing changed.
+ */
+export function repriceBag(lines: BagLine[], catalog: CatalogSnapshot, market: MarketCode): BagLine[] {
+  let changed = false;
+  const next: BagLine[] = [];
+  for (const line of lines) {
+    const match = findVariantBySku(catalog, line.sku);
+    const price = match ? priceFor(match.variant, market) : null;
+    if (!match || price === null) {
+      changed = true;
+      continue;
+    }
+    if (line.unitPrice !== price || line.market !== market) {
+      changed = true;
+      next.push({ ...line, unitPrice: price, market });
+    } else {
+      next.push(line);
+    }
+  }
+  return changed ? next : lines;
 }

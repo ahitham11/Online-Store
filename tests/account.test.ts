@@ -115,11 +115,11 @@ function catalog() {
         nameAr: 'أ',
         nameEn: 'A',
         variants: [
-          { sku: 'A-1', priceEgp: 100, available: 5 },
-          { sku: 'A-2', priceEgp: 120, available: 5 },
+          { sku: 'A-1', prices: { EG: 100 }, available: 5 },
+          { sku: 'A-2', prices: { EG: 120 }, available: 5 },
         ],
       },
-      { id: 'test-b', categoryId: 'test-cat', nameAr: 'ب', nameEn: 'B', variants: [{ sku: 'B-1', priceEgp: 50, available: 1 }] },
+      { id: 'test-b', categoryId: 'test-cat', nameAr: 'ب', nameEn: 'B', variants: [{ sku: 'B-1', prices: { EG: 50 }, available: 1 }] },
     ],
   });
   assert.equal(result.ok, true);
@@ -127,8 +127,8 @@ function catalog() {
   return result.catalog;
 }
 
-function line(sku: string, quantity: number, unitPriceEgp = 1): BagLine {
-  return { key: sku, productId: 'x', sku, nameAr: 'x', nameEn: 'x', unitPriceEgp, quantity };
+function line(sku: string, quantity: number, unitPrice = 1): BagLine {
+  return { key: sku, productId: 'x', sku, nameAr: 'x', nameEn: 'x', unitPrice, market: 'EG', quantity };
 }
 
 test('mergeBag keeps the larger quantity, refreshes prices and drops unknown SKUs', () => {
@@ -141,7 +141,7 @@ test('mergeBag keeps the larger quantity, refreshes prices and drops unknown SKU
     catalog(),
   );
   assert.deepEqual(
-    merged.map((item) => [item.sku, item.quantity, item.unitPriceEgp]),
+    merged.map((item) => [item.sku, item.quantity, item.unitPrice]),
     [
       ['A-1', 2, 100],
       ['B-1', 3, 50],

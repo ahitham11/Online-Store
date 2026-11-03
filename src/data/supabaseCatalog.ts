@@ -28,8 +28,8 @@ export type VariantRow = {
   shade_hex: string | null;
   size: string | null;
   images: string[] | null;
-  price_egp: number | string;
-  compare_at_price_egp: number | string | null;
+  prices: Record<string, number | string> | null;
+  compare_at: Record<string, number | string> | null;
   available: number;
   low_stock_threshold: number;
   sort_order: number;
@@ -80,9 +80,11 @@ export type CatalogRows = {
   banners: BannerRow[];
 };
 
-/** Postgres `numeric` arrives as a string; prices are never guessed. */
-function toNumber(value: number | string): number {
-  return typeof value === 'number' ? value : Number(value);
+/** jsonb numbers may arrive as strings; prices are never guessed. */
+function toPrices(value: Record<string, number | string> | null): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [market, price] of Object.entries(value ?? {})) out[market] = typeof price === 'number' ? price : Number(price);
+  return out;
 }
 
 export function rowsToSnapshot(rows: CatalogRows): CatalogSnapshot {
@@ -124,9 +126,8 @@ export function rowsToSnapshot(rows: CatalogRows): CatalogSnapshot {
           shadeHex: variant.shade_hex,
           size: variant.size,
           images: variant.images ?? [],
-          priceEgp: toNumber(variant.price_egp),
-          compareAtPriceEgp:
-            variant.compare_at_price_egp === null ? null : toNumber(variant.compare_at_price_egp),
+          prices: toPrices(variant.prices),
+          compareAt: toPrices(variant.compare_at),
           available: variant.available,
           lowStockThreshold: variant.low_stock_threshold,
         })),

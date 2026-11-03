@@ -9,8 +9,9 @@ import { Icon } from '@/components/ui/Icon';
 import { useI18n } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
 import { hapticSuccess, hapticTap } from '@/lib/haptics';
-import { formatEgp, stockState } from '@/lib/format';
-import { bagLineFor, defaultVariant, galleryFor } from '@/lib/variants';
+import { formatPrice, stockState } from '@/lib/format';
+import { useMarket } from '@/hooks/useMarket';
+import { bagLineFor, compareAtFor, defaultVariant, galleryFor, priceFor } from '@/lib/variants';
 import type { Product } from '@/data/catalog';
 import { useBagStore } from '@/stores/bag';
 import { useWishlistStore } from '@/stores/wishlist';
@@ -36,13 +37,15 @@ export function ProductCard({ product, onPress, width }: Props) {
   const inWishlist = useWishlistStore((state) => state.productIds.includes(product.id));
   const toggleWishlist = useWishlistStore((state) => state.toggle);
 
-  const variant = defaultVariant(product);
-  const soldOut = !variant || variant.available <= 0;
+  const market = useMarket();
+  const variant = defaultVariant(product, market.code);
+  const price = priceFor(variant, market.code);
+  const compareAt = compareAtFor(variant, market.code);
+  const soldOut = !variant || variant.available <= 0 || price === null;
   const stock = variant ? stockState(variant.available, variant.lowStockThreshold) : 'out_of_stock';
   const name = localized(product.nameAr, product.nameEn);
   const shade = variant ? localized(variant.shadeNameAr, variant.shadeNameEn) : '';
   const image = galleryFor(product, variant)[0] ?? null;
-  const price = variant?.priceEgp ?? 0;
 
   return (
     <TiltCard
@@ -143,11 +146,11 @@ export function ProductCard({ product, onPress, width }: Props) {
           <View style={[styles.bottomRow, { borderTopColor: colors.border }]}>
             <View style={styles.priceBlock}>
               <AppText variant="price" style={styles.price} maxScale={1.2}>
-                {formatEgp(price, language)}
+                {price === null ? t('product.notInMarket') : formatPrice(price, market.code, language)}
               </AppText>
-              {variant?.compareAtPriceEgp && variant.compareAtPriceEgp > price ? (
+              {compareAt !== null ? (
                 <AppText variant="caption" tone="tertiary" style={styles.compare} maxScale={1.1}>
-                  {formatEgp(variant.compareAtPriceEgp, language)}
+                  {formatPrice(compareAt, market.code, language)}
                 </AppText>
               ) : null}
             </View>
@@ -159,7 +162,7 @@ export function ProductCard({ product, onPress, width }: Props) {
               onPress={() => {
                 if (!variant || soldOut) return;
                 hapticSuccess();
-                addLine(bagLineFor(product, variant));
+                addLine(bagLineFor(product, variant, 1, market.code));
               }}
               style={({ pressed }) => [
                 styles.addButton,

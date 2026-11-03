@@ -17,7 +17,8 @@ import {
   galleryFor,
   hasShades,
   hasSizes,
-  savingsEgp,
+  savingsFor,
+  priceFor,
 } from '../src/lib/variants.ts';
 
 // Test-only fixture. It exists to exercise validation rules and is never
@@ -42,11 +43,11 @@ function fixture() {
             shadeNameEn: 'One',
             shadeHex: '#AA2244',
             images: ['https://example.test/v1.jpg'],
-            priceEgp: 100,
-            compareAtPriceEgp: 120,
+            prices: { EG: 100 },
+            compareAt: { EG: 120 },
             available: 0,
           },
-          { sku: 'T-2', shadeNameEn: 'Two', shadeHex: '#112233', priceEgp: 110, available: 5, lowStockThreshold: 2 },
+          { sku: 'T-2', shadeNameEn: 'Two', shadeHex: '#112233', prices: { EG: 110 }, available: 5, lowStockThreshold: 2 },
         ],
       },
     ],
@@ -75,11 +76,11 @@ test('an empty file stays an empty catalog with no update date', () => {
 
 test('a missing price is rejected, never defaulted', () => {
   const broken = fixture();
-  delete (broken.products[0].variants[1] as { priceEgp?: number }).priceEgp;
+  (broken.products[0].variants[1] as { prices: object }).prices = {};
   const result = parseCatalog(broken);
   assert.equal(result.ok, false);
   if (result.ok) return;
-  assert.match(result.errors.join('\n'), /variants\.1\.priceEgp/);
+  assert.match(result.errors.join('\n'), /variants\.1\.prices/);
 });
 
 test('duplicate SKUs and unknown categories are rejected', () => {
@@ -96,7 +97,7 @@ test('duplicate SKUs and unknown categories are rejected', () => {
 
 test('compare-at price must be higher than the price', () => {
   const broken = fixture();
-  broken.products[0].variants[0].compareAtPriceEgp = 90;
+  (broken.products[0].variants[0] as { compareAt: object }).compareAt = { EG: 90 };
   const result = parseCatalog(broken);
   assert.equal(result.ok, false);
 });
@@ -129,12 +130,12 @@ function rows(): CatalogRows {
         product_variants: [
           {
             sku: 'B', product_id: 'test-product', barcode: null, shade_name_ar: null, shade_name_en: null,
-            shade_hex: null, size: '50 ml', images: null, price_egp: '350.50', compare_at_price_egp: null,
+            shade_hex: null, size: '50 ml', images: null, prices: { EG: '350.50', AE: 120 }, compare_at: null,
             available: 4, low_stock_threshold: 3, sort_order: 1,
           },
           {
             sku: 'A', product_id: 'test-product', barcode: null, shade_name_ar: null, shade_name_en: null,
-            shade_hex: null, size: '30 ml', images: null, price_egp: '250.00', compare_at_price_egp: '300.00',
+            shade_hex: null, size: '30 ml', images: null, prices: { EG: '250.00' }, compare_at: { EG: '300.00' },
             available: 0, low_stock_threshold: 3, sort_order: 0,
           },
         ],
@@ -151,14 +152,14 @@ test('Supabase rows map to the app snapshot with numeric prices and variant orde
   assert.equal(snapshot.updatedAt, '2026-11-02T08:00:00+00:00');
   const [product] = snapshot.products;
   assert.deepEqual(product.variants.map((v) => v.sku), ['A', 'B']);
-  assert.equal(product.variants[1].priceEgp, 350.5);
-  assert.equal(product.variants[0].compareAtPriceEgp, 300);
+  assert.deepEqual(product.variants[1].prices, { EG: 350.5, AE: 120 });
+  assert.deepEqual(product.variants[0].compareAt, { EG: 300 });
   assert.equal(product.descriptionEn, '');
 });
 
 test('corrupt published rows raise instead of showing invented values', () => {
   const bad = rows();
-  bad.products[0].product_variants![0].price_egp = 'not-a-number';
+  bad.products[0].product_variants![0].prices = { EG: 'not-a-number' };
   assert.throws(() => rowsToSnapshot(bad), CatalogIntegrityError);
 });
 
@@ -211,16 +212,56 @@ test('variant helpers pick buyable stock, clamp quantity and build bag lines', (
   const soldOut = findVariant(product, 'T-1');
   assert.deepEqual(galleryFor(product, soldOut), ['https://example.test/v1.jpg', 'https://example.test/p.jpg']);
   assert.equal(clampQuantity(3, soldOut), 0);
-  assert.equal(savingsEgp(soldOut), 20);
+  assert.equal(savingsFor(soldOut, 'EG'), 20);
 
   const buyable = findVariant(product, 'T-2')!;
   assert.equal(clampQuantity(50, buyable), 5);
   assert.equal(clampQuantity(0, buyable), 1);
-  assert.equal(savingsEgp(buyable), 0);
+  assert.equal(savingsFor(buyable, 'EG'), 0);
 
-  const line = bagLineFor(product, buyable, 2);
+  const line = bagLineFor(product, buyable, 2, 'EG');
+  assert.equal(priceFor(buyable, 'AE'), null);
   assert.equal(line.key, 'T-2');
-  assert.equal(line.unitPriceEgp, 110);
+  assert.equal(line.unitPrice, 110);
   assert.equal(line.quantity, 2);
   assert.equal(line.imageUri, 'https://example.test/p.jpg');
+});
+
+test('markets: currency formatting, shipping thresholds and phone numbers', async () => {
+  const { formatPrice, shippingFee, normalizePhone, marketFromRegion, markets } = await import('../src/lib/markets.ts');
+  assert.equal(formatPrice(100, 'EG', 'en'), '100 EGP');
+  assert.equal(formatPrice(100, 'AE', 'ar'), '100 د.إ');
+  assert.equal(formatPrice(100, 'SA', 'en'), '100 SAR');
+  assert.equal(formatPrice(12.5, 'IE', 'en'), '€12.50');
+  assert.equal(formatPrice(100, 'IE', 'en'), '€100');
+  assert.equal(shippingFee(0, markets.EG.shipping), 0);
+  assert.equal(shippingFee(500, markets.EG.shipping), 60);
+  assert.equal(shippingFee(1000, markets.EG.shipping), 0);
+  assert.equal(normalizePhone('010 1234 5678', 'EG'), '+201012345678');
+  assert.equal(normalizePhone('+971 55 945 2564', 'AE'), '+971559452564');
+  assert.equal(normalizePhone('٠٥٥٩٤٥٢٥٦٤', 'AE'), '+971559452564');
+  assert.equal(normalizePhone('087 625 1185', 'IE'), '+353876251185');
+  assert.equal(normalizePhone('12345', 'SA'), null);
+  assert.equal(marketFromRegion('ae'), 'AE');
+  assert.equal(marketFromRegion('US'), 'EG');
+});
+
+test('repriceBag switches currency and drops shades not sold in the market', async () => {
+  const { repriceBag } = await import('../src/lib/accountSync.ts');
+  const result = parseCatalog({
+    categories: [{ id: 'c', nameAr: 'أ', nameEn: 'A' }],
+    products: [{ id: 'p', categoryId: 'c', nameAr: 'م', nameEn: 'P', variants: [
+      { sku: 'S1', prices: { EG: 100, AE: 100 }, available: 3 },
+      { sku: 'S2', prices: { EG: 100 }, available: 3 },
+    ] }],
+  });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  const lines = [
+    { key: 'S1', productId: 'p', sku: 'S1', nameAr: 'م', nameEn: 'P', unitPrice: 100, market: 'EG' as const, quantity: 1 },
+    { key: 'S2', productId: 'p', sku: 'S2', nameAr: 'م', nameEn: 'P', unitPrice: 100, market: 'EG' as const, quantity: 2 },
+  ];
+  assert.equal(repriceBag(lines, result.catalog, 'EG'), lines);
+  const ae = repriceBag(lines, result.catalog, 'AE');
+  assert.deepEqual(ae.map((l) => [l.sku, l.market, l.unitPrice]), [['S1', 'AE', 100]]);
 });

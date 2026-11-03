@@ -14,6 +14,8 @@ import { policySlugs, type PolicySlug } from '@/data/policies';
 import { hapticSelection, hapticTap } from '@/lib/haptics';
 import { useI18n, type TranslationKey } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
+import { useMarket } from '@/hooks/useMarket';
+import { MARKET_CODES, markets } from '@/lib/markets';
 import { authIsAvailable, useSessionStore } from '@/stores/session';
 import type { ThemePreference } from '@/theme/tokens';
 import { hairline, radii, spacing } from '@/theme/tokens';
@@ -37,6 +39,7 @@ export default function AccountScreen() {
   const { t, language, setLanguage, isRTL } = useI18n();
   const version = Constants.expoConfig?.version ?? '1.0.0';
   const whatsapp = getWhatsAppUrl();
+  const market = useMarket();
   const status = useSessionStore((state) => state.status);
   const user = useSessionStore((state) => state.user);
   const signOut = useSessionStore((state) => state.signOut);
@@ -154,6 +157,54 @@ export default function AccountScreen() {
                 {language === 'ar' ? 'العربية' : 'English'}
               </AppText>
             </Pressable>
+
+            <View style={[styles.rule, { backgroundColor: colors.border }]} />
+
+            <View style={styles.themeBlock}>
+              <View style={[styles.rowStart, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Icon name="globe" size={18} color={colors.textSecondary} />
+                <AppText variant="body" maxScale={1.3}>
+                  {t('account.country')}
+                </AppText>
+              </View>
+              <View
+                style={[
+                  styles.themeRow,
+                  { flexDirection: isRTL ? 'row-reverse' : 'row', borderColor: colors.border },
+                ]}>
+                {MARKET_CODES.map((code) => {
+                  const option = markets[code];
+                  const active = market.code === code;
+                  const label = language === 'ar' ? option.nameAr : option.nameEn;
+                  return (
+                    <Pressable
+                      key={code}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected: active }}
+                      accessibilityLabel={label}
+                      onPress={() => {
+                        hapticSelection();
+                        market.setMarket(code);
+                      }}
+                      style={({ pressed }) => [
+                        styles.themeOption,
+                        {
+                          backgroundColor: active ? colors.bgAlt : 'transparent',
+                          borderColor: active ? colors.goldLine : 'transparent',
+                          opacity: pressed ? 0.66 : 1,
+                        },
+                      ]}>
+                      <AppText variant="body" maxScale={1.1}>
+                        {option.flag}
+                      </AppText>
+                      <AppText variant="caption" tone={active ? 'accent' : 'tertiary'} maxScale={1.15} numberOfLines={1}>
+                        {code === 'AE' && language === 'en' ? 'UAE' : label}
+                      </AppText>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
 
             <View style={[styles.rule, { backgroundColor: colors.border }]} />
 

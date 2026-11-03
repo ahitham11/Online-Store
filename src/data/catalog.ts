@@ -1,3 +1,5 @@
+import type { MarketCode } from '../lib/markets.ts';
+
 export type SoldAs = 'piece' | 'box' | 'set' | 'bundle';
 
 export type Category = {
@@ -17,8 +19,10 @@ export type ProductVariant = {
   shadeHex: string | null;
   size: string | null;
   images: string[];
-  priceEgp: number;
-  compareAtPriceEgp: number | null;
+  /** Price per market in that market's currency. Missing = not sold there. */
+  prices: Partial<Record<MarketCode, number>>;
+  /** Optional pre-sale price per market (must be higher than the price). */
+  compareAt: Partial<Record<MarketCode, number>>;
   available: number;
   lowStockThreshold: number;
 };

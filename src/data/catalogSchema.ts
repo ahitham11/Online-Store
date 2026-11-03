@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import type { CatalogSnapshot } from './catalog.ts';
+import { MARKET_CODES } from '../lib/markets.ts';
 
 /**
  * Source-of-truth format for `catalog/catalog.json`.
@@ -21,7 +22,10 @@ const hex = z
   .regex(/^#[0-9a-fA-F]{6}$/, { message: 'shadeHex must look like #A1B2C3' })
   .nullish()
   .transform((value) => value ?? null);
-const egp = z.number().finite().positive().max(1_000_000);
+const money = z.number().finite().positive().max(1_000_000);
+const marketPrices = z
+  .object(Object.fromEntries(MARKET_CODES.map((code) => [code, money.optional()])) as Record<(typeof MARKET_CODES)[number], z.ZodOptional<typeof money>>)
+  .strict();
 
 export const categoryInputSchema = z.object({
   id,
@@ -41,14 +45,23 @@ export const variantInputSchema = z
     shadeHex: hex,
     size: optionalText,
     images: z.array(imageUrl).default([]),
-    priceEgp: egp,
-    compareAtPriceEgp: egp.nullish().transform((value) => value ?? null),
+    /** Price per market, e.g. { "EG": 100, "AE": 100 }. At least one market is required. */
+    prices: marketPrices,
+    compareAt: marketPrices.default({}),
     available: z.number().int().min(0),
     lowStockThreshold: z.number().int().min(0).default(3),
   })
+  .refine((variant) => Object.values(variant.prices).some((price) => typeof price === 'number'), {
+    message: 'a variant needs a price in at least one market',
+    path: ['prices'],
+  })
   .refine(
-    (variant) => variant.compareAtPriceEgp === null || variant.compareAtPriceEgp > variant.priceEgp,
-    { message: 'compareAtPriceEgp must be higher than priceEgp', path: ['compareAtPriceEgp'] },
+    (variant) =>
+      Object.entries(variant.compareAt).every(([market, compare]) => {
+        const price = variant.prices[market as keyof typeof variant.prices];
+        return typeof compare !== 'number' || (typeof price === 'number' && compare > price);
+      }),
+    { message: 'compareAt must be higher than the price in the same market', path: ['compareAt'] },
   );
 
 export const productInputSchema = z.object({

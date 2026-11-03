@@ -21,7 +21,8 @@ import { GoldRule } from '@/components/ui/GoldRule';
 import { Icon } from '@/components/ui/Icon';
 import { getProductBySlug, type SoldAs } from '@/data/catalog';
 import { useCatalog } from '@/data/useCatalog';
-import { formatEgp, formatQuantity, stockState } from '@/lib/format';
+import { formatPrice, formatQuantity, stockState } from '@/lib/format';
+import { useMarket } from '@/hooks/useMarket';
 import { hapticSuccess, hapticTap } from '@/lib/haptics';
 import { useI18n, type TranslationKey } from '@/lib/i18n';
 import { useTheme } from '@/lib/theme';
@@ -32,7 +33,9 @@ import {
   galleryFor,
   hasShades,
   hasSizes,
-  savingsEgp,
+  compareAtFor,
+  priceFor,
+  savingsFor,
 } from '@/lib/variants';
 import { useBagStore } from '@/stores/bag';
 import { useWishlistStore } from '@/stores/wishlist';
@@ -66,6 +69,7 @@ export default function ProductScreen() {
   const { colors } = useTheme();
   const { t, localized, isRTL, language } = useI18n();
   const catalog = useCatalog();
+  const market = useMarket();
 
   const product = useMemo(
     () => (id ? getProductBySlug(catalog.data, id) : null),
@@ -103,12 +107,14 @@ export default function ProductScreen() {
     );
   }
 
-  const variant = findVariant(product, selectedSku);
+  const variant = findVariant(product, selectedSku, market.code);
+  const price = priceFor(variant, market.code);
+  const compareAt = compareAtFor(variant, market.code);
   const gallery = galleryFor(product, variant);
   const stock = variant ? stockState(variant.available, variant.lowStockThreshold) : 'out_of_stock';
-  const soldOut = !variant || variant.available <= 0;
+  const soldOut = !variant || variant.available <= 0 || price === null;
   const qty = clampQuantity(quantity, variant);
-  const savings = savingsEgp(variant);
+  const savings = savingsFor(variant, market.code);
   const name = localized(product.nameAr, product.nameEn);
   const description = localized(product.descriptionAr, product.descriptionEn);
   const contentWidth = Math.min(width, layout.maxContentWidth + 160);
@@ -209,17 +215,17 @@ export default function ProductScreen() {
           <View style={[styles.priceRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             {variant ? (
               <AppText variant="price" style={styles.price} maxScale={1.2}>
-                {formatEgp(variant.priceEgp, language)}
+                {price === null ? t('product.notInMarket') : formatPrice(price, market.code, language)}
               </AppText>
             ) : null}
-            {savings > 0 && variant?.compareAtPriceEgp ? (
+            {savings > 0 && compareAt !== null ? (
               <>
                 <AppText variant="bodySmall" tone="tertiary" style={styles.compare} maxScale={1.1}>
-                  {formatEgp(variant.compareAtPriceEgp, language)}
+                  {formatPrice(compareAt, market.code, language)}
                 </AppText>
                 <View style={[styles.saveChip, { borderColor: colors.goldLine }]}>
                   <AppText variant="caption" tone="accent" maxScale={1.1}>
-                    {t('product.save', { amount: formatEgp(savings, language) })}
+                    {t('product.save', { amount: formatPrice(savings, market.code, language) })}
                   </AppText>
                 </View>
               </>
@@ -346,7 +352,7 @@ export default function ProductScreen() {
             onPress={() => {
               if (!variant || soldOut) return;
               hapticSuccess();
-              addLine(bagLineFor(product, variant, qty));
+              addLine(bagLineFor(product, variant, qty, market.code));
               setJustAdded(true);
             }}
           />
