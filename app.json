@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Velvety",
+    "name": "VEIVETY",
     "slug": "velvety-atelier",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -14,7 +14,7 @@
     "android": {
       "package": "com.velvety.atelier",
       "adaptiveIcon": {
-        "backgroundColor": "#0E0A0B",
+        "backgroundColor": "#FFFBFA",
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "monochromeImage": "./assets/images/adaptive-icon.png"
       },
@@ -23,10 +23,10 @@
     "web": {
       "output": "single",
       "favicon": "./assets/images/favicon.png",
-      "name": "Velvety",
-      "shortName": "Velvety",
-      "themeColor": "#0E0A0B",
-      "backgroundColor": "#0E0A0B"
+      "name": "VEIVETY",
+      "shortName": "VEIVETY",
+      "themeColor": "#FFFBFA",
+      "backgroundColor": "#FFFBFA"
     },
     "plugins": [
       [
@@ -39,9 +39,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0E0A0B",
+          "backgroundColor": "#FFFBFA",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 220,
+          "imageWidth": 240,
           "resizeMode": "contain"
         }
       ],

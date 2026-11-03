@@ -27,9 +27,9 @@ type BrandConfig = {
 };
 
 export const brand: BrandConfig = {
-  nameAr: 'فيلفيتي',
-  nameEn: 'Velvety',
-  fullName: 'Beautty with Velvety',
+  nameAr: 'VEIVETY',
+  nameEn: 'VEIVETY',
+  fullName: 'Beauty with VEIVETY',
   handle: 'beautty_with_velvety',
   instagramUrl: 'https://instagram.com/beautty_with_velvety',
   whatsapp: null as string | null,

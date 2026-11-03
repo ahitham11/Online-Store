@@ -1,3 +1,4 @@
+import { Anton_400Regular } from '@expo-google-fonts/anton';
 import {
   CormorantGaramond_300Light,
   CormorantGaramond_400Regular,
@@ -24,6 +25,7 @@ import {
 import { useFonts } from 'expo-font';
 
 export const fontAssets = {
+  Anton_400Regular,
   ElMessiri_400Regular,
   ElMessiri_500Medium,
   ElMessiri_600SemiBold,
@@ -50,7 +52,9 @@ export type AppFontFamily =
   | 'bodyMedium'
   | 'bodySemiBold'
   | 'bodyBold'
-  | 'label';
+  | 'label'
+  /** The VEIVETY wordmark: heavy condensed capitals, Latin in both languages. */
+  | 'logo';
 
 export const fontFamilies: Record<AppFontFamily, { ar: string; en: string }> = {
   display: { ar: 'ElMessiri_600SemiBold', en: 'CormorantGaramond_400Regular' },
@@ -62,6 +66,7 @@ export const fontFamilies: Record<AppFontFamily, { ar: string; en: string }> = {
   bodySemiBold: { ar: 'IBMPlexSansArabic_600SemiBold', en: 'DMSans_600SemiBold' },
   bodyBold: { ar: 'IBMPlexSansArabic_700Bold', en: 'DMSans_600SemiBold' },
   label: { ar: 'IBMPlexSansArabic_500Medium', en: 'DMSans_500Medium' },
+  logo: { ar: 'Anton_400Regular', en: 'Anton_400Regular' },
 };
 
 export function useAppFonts() {

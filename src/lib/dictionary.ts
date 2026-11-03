@@ -1,5 +1,5 @@
 export const ar = {
-  'common.appName': 'فيلفيتي',
+  'common.appName': 'VEIVETY',
   'common.brandLine': 'بيت الجمال',
   'common.skip': 'تخطي',
   'common.close': 'إغلاق',
@@ -43,7 +43,7 @@ export const ar = {
   'header.notifications': 'الإشعارات',
 
   'opening.skip': 'تخطي الافتتاحية',
-  'opening.a11y': 'افتتاحية فيلفيتي. اضغطي للتخطي.',
+  'opening.a11y': 'افتتاحية VEIVETY. اضغطي للتخطي.',
 
   'home.heroEyebrow': 'المجموعة الأولى',
   'home.heroTitle': 'الستارة تُفتح قريبًا',
@@ -85,7 +85,7 @@ export const ar = {
   'home.offersTitle': 'لا وعود قبل وقتها',
   'home.offersEmptyBody':
     'لن تجدي عدّادًا وهميًا أو خصمًا بلا تاريخ. العروض الحقيقية فقط تظهر هنا.',
-  'home.atelierEyebrow': 'بيت فيلفيتي',
+  'home.atelierEyebrow': 'بيت VEIVETY',
   'home.atelierTitle': 'هدوء، حرير، وضوء دافئ',
   'home.atelierBody':
     'تبقى الواجهة هادئة: مخمل، خط ذهبي رفيع، ومساحة كافية للقطعة. الحركة تُضاف ولا تتنافس مع ما تختارينه.',
@@ -375,7 +375,7 @@ export const ar = {
 export type TranslationKey = keyof typeof ar;
 
 export const en: Record<TranslationKey, string> = {
-  'common.appName': 'Velvety',
+  'common.appName': 'VEIVETY',
   'common.brandLine': 'The house of beauty',
   'common.skip': 'Skip',
   'common.close': 'Close',
@@ -419,7 +419,7 @@ export const en: Record<TranslationKey, string> = {
   'header.notifications': 'Notifications',
 
   'opening.skip': 'Skip opening',
-  'opening.a11y': 'Velvety opening. Tap to skip.',
+  'opening.a11y': 'VEIVETY opening. Tap to skip.',
 
   'home.heroEyebrow': 'The first collection',
   'home.heroTitle': 'The curtain rises soon',
@@ -461,7 +461,7 @@ export const en: Record<TranslationKey, string> = {
   'home.offersTitle': 'No promises before their time',
   'home.offersEmptyBody':
     'No fake countdowns, no discounts without an end date. Only real offers appear here.',
-  'home.atelierEyebrow': 'House of Velvety',
+  'home.atelierEyebrow': 'House of VEIVETY',
   'home.atelierTitle': 'Quiet, silk, and warm light',
   'home.atelierBody':
     'The surface stays calm: velvet, a fine gold line, and room for the piece. Motion is added, never in competition with what you choose.',

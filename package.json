@@ -17,6 +17,7 @@
     "catalog:sql": "node --experimental-strip-types scripts/catalog-to-sql.ts"
   },
   "dependencies": {
+    "@expo-google-fonts/anton": "^0.4.2",
     "@expo-google-fonts/cormorant-garamond": "^0.4.1",
     "@expo-google-fonts/dm-sans": "^0.4.2",
     "@expo-google-fonts/el-messiri": "^0.4.2",
